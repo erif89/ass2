@@ -68,7 +68,7 @@
 ;; Evaluates body once for each key-value pair in dict. key and value are
 ;; bound to each key-value pair in dict.
 ;;
-(defmacro with-keys ()  ; TODO list arguments as (key value dict) body
+(defmacro with-keys ((key value dict) body)
     "Returns result of evaluating body on each key-value pair in dict"
     nil)  ; TODO implement
 
@@ -83,7 +83,8 @@
 ;; have the same value. Since 'sexpr expands to (quote sexpr), the symbol
 ;; quote can not be used as a variable. This is ok, as is disallowing t
 ;; and nil as variables.
-(defmacro match-pattern (expr)  ; TODO list arguments as (expr ((pattern_1 body_1) (pattern_2 body_2) .. (pattern_n body_n)))
+;;
+(defmacro match-pattern (expr &rest patternlist)  ; TODO list arguments as (expr ((pattern_1 body_1) (pattern_2 body_2) .. (pattern_n body_n)))
     "Returns result of evaluationg the first body with pattern matching expr"
     nil)  ; TODO implement
 
