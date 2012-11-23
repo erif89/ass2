@@ -73,8 +73,17 @@
     nil)  ; TODO implement
 
 ;;
-;; Evaluates expr and then tries to match the result against pattern_i. If it succeeds body_i is evaluated with the free variables in pattern_i bound during the evaluation. A pattern is a general S-expression, where a symbol is a variable and can match anything. A quoted structure must match exactly (and thus contains no variables). Note that a variable can occur several times in a pattern and must then have the same value. Since 'sexpr expands to (quote sexpr), the symbol quote can not be used as a variable. This is ok, as is disallowing t and nil as variables.
-(defmacro match-pattern (expr)  ; TODO list arguments as (pattern_1 body_1) (pattern_2 body_2) .. (pattern_n body_n)
+;; Evaluates expr and then tries to match the result against pattern_i.
+;; If it succeeds body_i is evaluated with the free variables in pattern_i,
+;; bound during the evaluation. A pattern is a general S-expression,
+;; where a symbol is a variable and can match anything. A quoted structure
+;; must match exactly (and thus contains no variables).
+;;
+;; Note that a variable can occur several times in a pattern and must then
+;; have the same value. Since 'sexpr expands to (quote sexpr), the symbol
+;; quote can not be used as a variable. This is ok, as is disallowing t
+;; and nil as variables.
+(defmacro match-pattern (expr)  ; TODO list arguments as (expr ((pattern_1 body_1) (pattern_2 body_2) .. (pattern_n body_n)))
     "Returns result of evaluationg the first body with pattern matching expr"
     nil)  ; TODO implement
 
