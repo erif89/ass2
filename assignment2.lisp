@@ -9,7 +9,9 @@
 ;;
 (defun create-dictionary (&key test)
     "Returns the empty dict with test as equality function"
-    nil)  ; TODO implement...
+    (if (eq test nil)
+        (list nil 'EQ)
+        (list nil 'test)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
