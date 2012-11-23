@@ -12,7 +12,7 @@
 ;; the key of that node, the value it is mapped to, and its two children.
 ;;
 (defun create-dictionary (&key test)
-    "Returns the empty dict with test as equality function"
+    "Returns the empty dict with test (or eq) as equality function"
     (if (eq test nil) ; then
         (list nil 'EQ) ; else
         (list nil 'test)))
