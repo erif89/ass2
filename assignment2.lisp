@@ -7,6 +7,10 @@
 ;; Creates a new empty dictionary with test being the equality function to be
 ;; used for keys. If test is not given, EQ is used.
 ;;
+;; A dictionary is represented as a list containing a binary tree root node
+;; and the equality function. A binary tree node is represented as a list with
+;; the key of that node, the value it is mapped to, and its two children.
+;;
 (defun create-dictionary (&key test)
     "Returns the empty dict with test as equality function"
     (if (eq test nil)
