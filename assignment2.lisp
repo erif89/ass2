@@ -7,28 +7,19 @@
 ;; Creates a new empty dictionary with test being the equality function to be
 ;; used for keys. If test is not given, EQ is used.
 ;;
-;; A dictionary is represented as a list containing a binary tree root node
-;; and the equality function. A binary tree node is represented as a list with
-;; the key of that node, the value it is mapped to, and its two children.
-;;
 (defun create-dictionary (&key test)
     "Returns the empty dict with test (or eq) as equality function"
-    (if (eq 'test nil) ; then
-        (list nil 'eq) ; else
-        (list nil 'test)))
+    (if (eq test nil) (MAKE-HASH-TABLE) (MAKE-HASH-TABLE :test test)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
 ;; exist, or nil if no default value is given.
 ;;
-;; Note that a binary tree node is represented as (key value child1 child2).
-;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    (cond ((eq (car (car dict)) nil)
-           (if (eq 'default nil) nil 'default))
-          ((second dict key (car (car dict))) (second (car dict)))
-          (T (if (eq 'default nil) nil 'default))))
+    (if (setf value (gethash key dict))
+        value
+        default))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
