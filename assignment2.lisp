@@ -14,16 +14,21 @@
 (defun create-dictionary (&key test)
     "Returns the empty dict with test (or eq) as equality function"
     (if (eq 'test nil) ; then
-        (list nil 'EQ) ; else
+        (list nil 'eq) ; else
         (list nil 'test)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
 ;; exist, or nil if no default value is given.
 ;;
+;; Note that a binary tree node is represented as (key value child1 child2).
+;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    nil)  ; TODO implement...
+    (cond ((eq (car (car dict)) nil)
+           (if (eq 'default nil) nil 'default))
+          ((second dict key (car (car dict))) (second (car dict)))
+          (T (if (eq 'default nil) nil 'default))))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
