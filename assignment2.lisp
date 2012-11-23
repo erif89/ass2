@@ -9,7 +9,9 @@
 ;;
 (defun create-dictionary (&key test)
     "Returns the empty dict with test (or eq) as equality function"
-    (if (eq test nil) (MAKE-HASH-TABLE) (MAKE-HASH-TABLE :test test)))
+    (if (eq test nil) ; then
+        (MAKE-HASH-TABLE) ; else
+        (MAKE-HASH-TABLE :test test)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -17,8 +19,8 @@
 ;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    (if (setf value (gethash key dict))
-        value
+    (if (setf value (gethash key dict)) ; then
+        value ; else
         default))
 
 ;;
