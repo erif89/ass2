@@ -13,8 +13,8 @@
 ;;
 (defun create-dictionary (&key test)
     "Returns the empty dict with test as equality function"
-    (if (eq test nil)
-        (list nil 'EQ)
+    (if (eq test nil) ; then
+        (list nil 'EQ) ; else
         (list nil 'test)))
 
 ;;
