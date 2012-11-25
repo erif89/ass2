@@ -19,7 +19,7 @@
 ;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    (if (setf value (gethash key dict)) ; then
+    (if (setf value (GETHASH key dict)) ; then
         value ; else
         default))
 
@@ -29,7 +29,7 @@
 ;;
 (defun update (key value dict)
     "Returns dict with (key, value) destructively inserted"
-    nil)  ; TODO implement
+    (setf (GETHASH key dict) value))
 
 ;;
 ;; fold the key-value pairs of the dictionary using the function fun, which
