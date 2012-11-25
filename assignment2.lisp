@@ -19,9 +19,7 @@
 ;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    (if (setf value (GETHASH key dict)) ; then
-        value ; else
-        default))
+    (let res (GETHASH key dict default)))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
