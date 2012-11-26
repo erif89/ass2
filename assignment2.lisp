@@ -25,7 +25,7 @@
 (defun create-dictionary (&key test)
     "Returns the empty dict with test (or eq) as ordering function"
     (if (eq test nil) ; then
-        (make-mydict) ; else
+        (make-mydict :test '<) ; else
         (make-mydict :test test)))
 
 ;;
