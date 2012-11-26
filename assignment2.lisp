@@ -5,10 +5,11 @@
 
 
 ;;
-;; Dictionary structure with purely functional access and update functions
+;; Dictionary structure with purely functional lookup and update functions
 ;;
 ;; A dictionary of type mydict is a binary search tree with an ordering
-;; function (test) and a root node (nodes), defined below.
+;; function (test) and a root node (nodes), defined below. The test
+;; should output LT for less than, T for equal and GT for greater than.
 ;;
 (defstruct mydict nodes test)
 
@@ -19,13 +20,23 @@
 (defstruct node key data left right)
 
 ;;
+;; Comparison function used as default by create-dictionary
+;;
+(defun compare (a b)
+    "Returns LT for less than, T for equal and GT for greater than"
+    (cond
+        ((< a b) 'LT)
+        ((= a b) 'T)
+        ((> a b) 'GT)))
+
+;;
 ;; Creates a new empty dictionary with test being the ordering function to be
-;; used for keys. If test is not given, < is used.
+;; used for keys. If test is not given, a compare defined by < and = is used.
 ;;
 (defun create-dictionary (&key test)
     "Returns the empty dict with test (or eq) as ordering function"
     (if (eq test nil) ; then
-        (make-mydict :test '<) ; else
+        (make-mydict :test #'compare) ; else
         (make-mydict :test test)))
 
 ;;
