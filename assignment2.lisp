@@ -3,15 +3,30 @@
 ;;; - Carl Carenvall <caca7037@student.uu.se>
 ;;; - Emil Wall <emwa3503@student.uu.se>
 
+
 ;;
-;; Creates a new empty dictionary with test being the equality function to be
-;; used for keys. If test is not given, EQ is used.
+;; Dictionary structure with purely functional access and update functions
+;;
+;; A dictionary of type mydict is a binary search tree with an ordering
+;; function (test) and a root node (nodes), defined below.
+;;
+(defstruct mydict nodes test)
+
+;;
+;; A node is a key-value store with two children nodes. Leaf children are
+;; represented as nil.
+;;
+(defstruct node key data left right)
+
+;;
+;; Creates a new empty dictionary with test being the ordering function to be
+;; used for keys. If test is not given, < is used.
 ;;
 (defun create-dictionary (&key test)
-    "Returns the empty dict with test (or eq) as equality function"
+    "Returns the empty dict with test (or eq) as ordering function"
     (if (eq test nil) ; then
-        (MAKE-HASH-TABLE) ; else
-        (MAKE-HASH-TABLE :test test)))
+        (make-mydict) ; else
+        (make-mydict :test test)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -19,7 +34,8 @@
 ;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    (setq res (GETHASH key dict default)))
+    nil)  ; TODO implement
+    ;(setq res (mydict- key dict default)))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
@@ -27,7 +43,8 @@
 ;;
 (defun update (key value dict)
     "Returns dict with (key, value) destructively inserted"
-    (setf (GETHASH key dict) value))
+    nil)  ; TODO implement
+    ;(setf (GETHASH key dict) value))
 
 ;;
 ;; fold the key-value pairs of the dictionary using the function fun, which
