@@ -45,13 +45,15 @@
          (value (mydict-value dict))
          (left (mydict-left dict))
          (right (mydict-right dict))
-         (cmp (mydict-test dict)))
+         (cmp (mydict-cmp dict)))
         (cond
-            ((eq (apply cmp '(key key2)) 'LT)
-                (if left (lookup key left :key default) default))
-            ((eq (apply cmp '(key key2)) 'T)
+            ((eq key2 nil)
+                default)
+            ((eq (funcall cmp key key2) 'T)
                 value)
-            ((eq (apply cmp '(key key2)) 'GT)
+            ((eq (funcall cmp key key2) 'LT)
+                (if left (lookup key left :key default) default))
+            ((eq (funcall cmp key key2) 'GT)
                 (if right (lookup key right :key default) default)))))
 
 ;;
