@@ -7,17 +7,12 @@
 ;;
 ;; Dictionary structure with purely functional lookup and update functions
 ;;
-;; A dictionary of type mydict is a binary search tree with an ordering
-;; function (test) and a root node (nodes), defined below. The test
-;; should output LT for less than, T for equal and GT for greater than.
+;; A dictionary of type mydict is a binary search tree node with an ordering
+;; function (cmp) a key-value store and two children nodes. The cmp function
+;; should output 'LT for less than, T for equal and 'GT for greater than. Leaf
+;; children are represented as nil.
 ;;
-(defstruct mydict nodes test)
-
-;;
-;; A node is a key-value store with two children nodes. Leaf children are
-;; represented as nil.
-;;
-(defstruct node key data left right)
+(defstruct mydict key value left right cmp)
 
 ;;
 ;; Comparison function used as default by create-dictionary
@@ -26,18 +21,18 @@
     "Returns LT for less than, T for equal and GT for greater than"
     (cond
         ((< a b) 'LT)
-        ((= a b) 'T)
+        ((= a b) T)
         ((> a b) 'GT)))
 
 ;;
 ;; Creates a new empty dictionary with test being the ordering function to be
-;; used for keys. If test is not given, a compare defined by < and = is used.
+;; used for keys. If test is not given, it is defined by <, = and > (compare).
 ;;
 (defun create-dictionary (&key test)
-    "Returns the empty dict with test (or eq) as ordering function"
+    "Returns the empty dict with test (or compare) as ordering function"
     (if (eq test nil) ; then
-        (make-mydict :test #'compare) ; else
-        (make-mydict :test test)))
+        (make-mydict :cmp #'compare) ; else
+        (make-mydict :cmp test)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -45,8 +40,16 @@
 ;;
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
-    nil)  ; TODO implement
-    ;(setq res (mydict- key dict default)))
+    (let
+        ((key2 (mydict-key dict))
+         (value (mydict-value dict))
+         (left (mydict-left dict))
+         (right (mydict-right dict))
+         (cmp (mydict-test dict)))
+        (cond
+            ((eq (apply cmp '(key key2)) 'LT) (lookup key left :key default)) ;TODO base case
+            ((eq (apply cmp '(key key2)) 'T) value)
+            ((eq (apply cmp '(key key2)) 'GT) (lookup key right :key default)))))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
