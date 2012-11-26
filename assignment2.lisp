@@ -62,8 +62,32 @@
 ;;
 (defun update (key value dict)
     "Returns dict with (key, value) destructively inserted"
-    nil)  ; TODO implement
-    ;(setf (GETHASH key dict) value))
+    (let
+        ((key2 (mydict-key dict))
+         (value2 (mydict-value dict))
+         (left (mydict-left dict))
+         (right (mydict-right dict))
+         (cmp (mydict-cmp dict)))
+        (cond
+            ((eq key2 nil)  ; Empty tree
+                (make-mydict :key key :value value :cmp cmp))
+            ((eq (funcall cmp key key2) 'T)  ; keys match
+                (make-mydict :key key :value value
+                 :left left :right right :cmp cmp))
+            ((eq (funcall cmp key key2) 'LT)  ; update left subtree
+                (if left
+                    (make-mydict :key key2 :value value2 :right right
+                    :left (update key value right) :cmp cmp)
+                    (make-mydict :key key2 :value value2 :right right
+                     :left (make-mydict :key key :value value :cmp cmp)
+                     :cmp cmp)))
+            ((eq (funcall cmp key key2) 'GT)  ; update right subtree
+                (if right
+                    (make-mydict :key key2 :value value2 :left left
+                     :right (update key value right) :cmp cmp)
+                    (make-mydict :key key2 :value value2 :left left
+                     :right (make-mydict :key key :value value :cmp cmp)
+                     :cmp cmp))))))
 
 ;;
 ;; fold the key-value pairs of the dictionary using the function fun, which
