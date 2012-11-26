@@ -47,9 +47,12 @@
          (right (mydict-right dict))
          (cmp (mydict-test dict)))
         (cond
-            ((eq (apply cmp '(key key2)) 'LT) (lookup key left :key default)) ;TODO base case
-            ((eq (apply cmp '(key key2)) 'T) value)
-            ((eq (apply cmp '(key key2)) 'GT) (lookup key right :key default)))))
+            ((eq (apply cmp '(key key2)) 'LT)
+                (if left (lookup key left :key default) default))
+            ((eq (apply cmp '(key key2)) 'T)
+                value)
+            ((eq (apply cmp '(key key2)) 'GT)
+                (if right (lookup key right :key default) default)))))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
