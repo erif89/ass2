@@ -7,17 +7,24 @@
 ;;
 ;; Dictionary structure with purely functional lookup and update functions
 ;;
-;; A dictionary of type mydict is a binary search tree node with an ordering
-;; function (cmp) a key-value store and two children nodes. The cmp function
-;; should output 'LT for less than, T for equal and 'GT for greater than. Leaf
-;; children are represented as nil.
+;; A dictionary of type mydict is a binary search tree with an ordering
+;; function (cmp) and a root node (nodes), defined below. The cmp function
+;; is used for node key comparison and should output LT for less than,
+;; T for equal and GT for greater than.
 ;;
+(defstruct mydict nodes compare)
+
+;;
+;; A node is a key-value store with two children nodes. Leaf children are
+;; represented as nil.
+;;
+(defstruct node key data left right)
 (defstruct mydict key value left right cmp)
 
 ;;
-;; Comparison function used as default by create-dictionary
+;; Comparison function for reals
 ;;
-(defun compare (a b)
+(defun intcompare (a b)
     "Returns LT for less than, T for equal and GT for greater than"
     (cond
         ((< a b) 'LT)
@@ -25,7 +32,7 @@
         ((> a b) 'GT)))
 
 ;;
-;; Comparison function for strings
+;; Comparison function for strings, used as default by create-dictionary
 ;;
 (defun strcompare (a b)
     "Returns LT for less than, T for equal and GT for greater than"
@@ -35,14 +42,14 @@
         ((string> a b) 'GT)))
 
 ;;
-;; Creates a new empty dictionary with test being the ordering function to be
-;; used for keys. If test is not given, it is defined by <, = and > (compare).
+;; Creates a new empty dictionary with compare being the ordering function to be
+;; used for key comparisons. If compare is not given, strcompare is used.
 ;;
-(defun create-dictionary (&key test)
-    "Returns the empty dict with test (or compare) as ordering function"
-    (if (eq test nil) ; then
-        (make-mydict :cmp #'compare) ; else
-        (make-mydict :cmp test)))
+(defun create-dictionary (&key compare)
+    "Returns the empty dict with compare (or strcompare) as ordering function"
+    (if (eq compare nil) ; then
+        (make-mydict :cmp #'strcompare) ; else
+        (make-mydict :cmp compare)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -70,7 +77,7 @@
 ;; Creates a new dictionary where key maps to value, regardless of if it
 ;; was present before.
 ;;
-(defun update (key value dict)
+(defun update (key value dict &key cmp)
     "Returns dict with (key, value) destructively inserted"
     (let
         ((key2 (mydict-key dict))
@@ -128,7 +135,7 @@
 ;;
 ;; Determines if dict1 and dict2 contain the same set of keys.
 ;; Care has been taken to make it efficient, i.e., no unnecessary large
-;; intermediate data structures are constructed. samekeys should use the test
+;; intermediate data structures are constructed. samekeys should use the compare
 ;; function, which should be the same for the two dictionaries and can be
 ;; assumed to be reflexive for its two arguments.
 ;;
