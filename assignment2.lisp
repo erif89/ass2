@@ -194,9 +194,9 @@
 ;;
 ;; Testfunction
 ;;
-
 (defun test-dict ()
     (cond
-        ( (not (compare -1 1) 'LT) (format t "compare less than failed (-1 1)") )
-    )
-)
+        ((not (eq (numcompare -1 1) 'LT))
+            (format t "compare less than failed (-1 1)"))
+        (T
+            (format t "All tests pass!"))))
