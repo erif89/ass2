@@ -25,6 +25,16 @@
         ((> a b) 'GT)))
 
 ;;
+;; Comparison function for strings
+;;
+(defun strcompare (a b)
+    "Returns LT for less than, T for equal and GT for greater than"
+    (cond
+        ((string< a b) 'LT)
+        ((string= a b) T)
+        ((string> a b) 'GT)))
+
+;;
 ;; Creates a new empty dictionary with test being the ordering function to be
 ;; used for keys. If test is not given, it is defined by <, = and > (compare).
 ;;
