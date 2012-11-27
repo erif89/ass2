@@ -47,8 +47,8 @@
 (defun create-dictionary (&key compare)
     "Returns the empty dict with compare (or strcompare) as ordering function"
     (if (null compare)
-        (make-treedict :tree (make-treenode) :cmp #'strcompare)
-        (make-treedict :tree (make-treenode) :cmp compare)))
+        (make-treedict :cmp #'strcompare)
+        (make-treedict :cmp compare)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -90,7 +90,11 @@
     (let
         ((tree (treedict-tree dict))
          (cmp (treedict-cmp dict)))
-        (make-treedict :tree (updatehelper key value tree cmp) :cmp cmp)))
+        (make-treedict
+         :tree (if tree
+                    (updatehelper key value tree cmp)
+                    (make-treenode :key key :value value))
+         :cmp cmp)))
 
 ;;
 ;; Help function for update. cmp is used for key comparisons in the key.
@@ -104,12 +108,10 @@
          (right (treenode-right node))
          (cmp (treenode-cmp node)))
         (cond
-            ((null key2)                                ; Empty tree
-                (make-treenode :key key :value value))
             ((eq (funcall cmp key key2) 'T)             ; Keys match
                 (make-treenode :key key :value value :left left :right right))
             ((eq (funcall cmp key key2) 'LT)            ; Update left subtree
-                (if left
+                (if left  ; End of recursion if subtree is empty
                     (make-treenode :key key2 :value value2
                      :left (updatehelper key value right)
                      :right right)
