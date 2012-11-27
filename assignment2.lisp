@@ -188,9 +188,37 @@
 ;;
 ;; Testfunction
 ;;
+
+(define-test numcompare
+  (assert-equal 'GT (numcompare 1 -1))
+  (assert-equal 'GT (numcompare 12345 5432))
+  (assert-equal 'T  (numcompare 1 1))
+  (assert-equal 'T  (numcompare 12345 12345))
+  (assert-equal 'LT (numcompare -1 1))
+  (assert-equal 'LT (numcompare 5432 12345))
+  )
+  
+  
 (defun test-dict ()
   (cond
     ((not (eq (numcompare -1 1) 'LT))
-      (format t "compare less than failed (-1 1)"))
-    (T
-      (format t "All tests pass!"))))
+      (format t "compare less than failed (-1 1)") )
+
+    ((not (eq (numcompare -1000 1000) 'LT)) 
+      (format t "compare less than failed (-1000 1000)") )
+
+    ((not (eq (numcompare 123 10) 'GT)) 
+      (format t "compare greater than failed (123 10)") )
+      
+    ((not (eq (numcompare 10 10) 'T)) 
+      (format t "compare equals failed (10 10)") )
+      
+    ((not (string= (lookup 1 (update 1 "one"
+        (create-dictionary :compare #'numcompare))) "one"))
+      (format t "creating dictionary, adding and retrieving one element failed"))
+
+    (T (format t "all tests Pass"))))
+
+(define-test strcompare
+  (assert-equal 'GT (strcompare "ABC" "AAA"))
+  )
