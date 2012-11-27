@@ -79,19 +79,19 @@
          (right (mydict-right dict))
          (cmp (mydict-cmp dict)))
         (cond
-            ((eq key2 nil)                              ; Empty tree
+            ((null key2)                                ; Empty tree
                 (make-mydict :key key :value value :cmp cmp))
-            ((eq (funcall cmp key key2) 'T)             ; keys match
+            ((eq (funcall cmp key key2) 'T)             ; Keys match
                 (make-mydict :key key :value value
                  :left left :right right :cmp cmp))
-            ((eq (funcall cmp key key2) 'LT)            ; update left subtree
+            ((eq (funcall cmp key key2) 'LT)            ; Update left subtree
                 (if left
                     (make-mydict :key key2 :value value2 :right right
                     :left (update key value right) :cmp cmp)
                     (make-mydict :key key2 :value value2 :right right
                      :left (make-mydict :key key :value value :cmp cmp)
                      :cmp cmp)))
-            ((eq (funcall cmp key key2) 'GT)            ; update right subtree
+            ((eq (funcall cmp key key2) 'GT)            ; Update right subtree
                 (if right
                     (make-mydict :key key2 :value value2 :left left
                      :right (update key value right) :cmp cmp)
