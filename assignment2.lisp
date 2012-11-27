@@ -7,19 +7,18 @@
 ;;
 ;; Dictionary structure with purely functional lookup and update functions
 ;;
-;; A dictionary of type mydict is a binary search tree with an ordering
-;; function (cmp) and a root node (nodes), defined below. The cmp function
+;; A dictionary of type treedict is a binary search tree with an ordering
+;; function (cmp) and a root treenode (tree), defined below. The cmp function
 ;; is used for node key comparison and should output LT for less than,
 ;; T for equal and GT for greater than.
 ;;
-(defstruct mydict nodes compare)
+(defstruct treedict tree cmp)
 
 ;;
-;; A node is a key-value store with two children nodes. Leaf children are
-;; represented as nil.
+;; A treenode is a key-value store with two children treenodes. Leaf children
+;; are represented as nil.
 ;;
-(defstruct node key data left right)
-(defstruct mydict key value left right cmp)
+(defstruct treenode key value left right)
 
 ;;
 ;; Comparison function for reals
@@ -42,14 +41,14 @@
         ((string> a b) 'GT)))
 
 ;;
-;; Creates a new empty dictionary with compare being the ordering function to be
-;; used for key comparisons. If compare is not given, strcompare is used.
+;; Creates a new empty dictionary with compare being the ordering function to
+;; be used for key comparisons. If compare is not given, strcompare is used.
 ;;
 (defun create-dictionary (&key compare)
     "Returns the empty dict with compare (or strcompare) as ordering function"
-    (if (eq compare nil) ; then
-        (make-mydict :cmp #'strcompare) ; else
-        (make-mydict :cmp compare)))
+    (if (null compare)
+        (make-treedict :tree (make-treenode) :cmp #'strcompare)
+        (make-treedict :tree (make-treenode) :cmp compare)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -58,13 +57,22 @@
 (defun lookup (key dict &key default)
     "Returns dict[key], or default/nil if no such value exists"
     (let
-        ((key2 (mydict-key dict))
-         (value (mydict-value dict))
-         (left (mydict-left dict))
-         (right (mydict-right dict))
-         (cmp (mydict-cmp dict)))
+        ((tree (treedict-tree dict))
+         (cmp (treedict-cmp dict)))
+        (lookuphelper key tree :default default :cmp cmp)))
+
+;;
+;; Help function for lookup
+;;
+(defun lookuphelper (key node &key default cmp)
+    "Returns value associated with key in node subtree, or default/nil"
+    (let
+        ((key2 (treenode-key node))
+         (value (treenode-value node))
+         (left (treenode-left node))
+         (right (treenode-right node)))
         (cond
-            ((eq key2 nil)
+            ((null key2)
                 default)
             ((eq (funcall cmp key key2) 'T)
                 value)
@@ -80,30 +88,30 @@
 (defun update (key value dict &key cmp)
     "Returns dict with (key, value) destructively inserted"
     (let
-        ((key2 (mydict-key dict))
-         (value2 (mydict-value dict))
-         (left (mydict-left dict))
-         (right (mydict-right dict))
-         (cmp (mydict-cmp dict)))
+        ((key2 (treedict-key dict))
+         (value2 (treedict-value dict))
+         (left (treedict-left dict))
+         (right (treedict-right dict))
+         (cmp (treedict-cmp dict)))
         (cond
             ((null key2)                                ; Empty tree
-                (make-mydict :key key :value value :cmp cmp))
+                (make-treedict :key key :value value :cmp cmp))
             ((eq (funcall cmp key key2) 'T)             ; Keys match
-                (make-mydict :key key :value value
+                (make-treedict :key key :value value
                  :left left :right right :cmp cmp))
             ((eq (funcall cmp key key2) 'LT)            ; Update left subtree
                 (if left
-                    (make-mydict :key key2 :value value2 :right right
+                    (make-treedict :key key2 :value value2 :right right
                     :left (update key value right) :cmp cmp)
-                    (make-mydict :key key2 :value value2 :right right
-                     :left (make-mydict :key key :value value :cmp cmp)
+                    (make-treedict :key key2 :value value2 :right right
+                     :left (make-treedict :key key :value value :cmp cmp)
                      :cmp cmp)))
             ((eq (funcall cmp key key2) 'GT)            ; Update right subtree
                 (if right
-                    (make-mydict :key key2 :value value2 :left left
+                    (make-treedict :key key2 :value value2 :left left
                      :right (update key value right) :cmp cmp)
-                    (make-mydict :key key2 :value value2 :left left
-                     :right (make-mydict :key key :value value :cmp cmp)
+                    (make-treedict :key key2 :value value2 :left left
+                     :right (make-treedict :key key :value value :cmp cmp)
                      :cmp cmp))))))
 
 ;;
@@ -135,9 +143,9 @@
 ;;
 ;; Determines if dict1 and dict2 contain the same set of keys.
 ;; Care has been taken to make it efficient, i.e., no unnecessary large
-;; intermediate data structures are constructed. samekeys should use the compare
-;; function, which should be the same for the two dictionaries and can be
-;; assumed to be reflexive for its two arguments.
+;; intermediate data structures are constructed. samekeys should use the
+;; compare function, which should be the same for the two dictionaries and can
+;; be assumed to be reflexive for its two arguments.
 ;;
 (defun samekeys (dict1 dict2)
     "Returns T if dict1 has the same keys as dict2, nil otherwise"
