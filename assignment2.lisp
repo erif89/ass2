@@ -47,8 +47,8 @@
 (defun create-dictionary (&key compare)
   "Returns the empty dict with compare (or strcompare) as ordering function"
   (if (null compare)
-    (make-treedict :cmp #'strcompare)
-    (make-treedict :cmp compare)))
+      (make-treedict :cmp #'strcompare)
+      (make-treedict :cmp compare)))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -56,9 +56,8 @@
 ;;
 (defun lookup (key dict &key default)
   "Returns dict[key], or default/nil if no such value exists"
-  (let
-    ((tree (treedict-tree dict))
-     (cmp (treedict-cmp dict)))
+  (let ((tree (treedict-tree dict))
+        (cmp (treedict-cmp dict)))
     (lookuphelper key tree :default default :cmp cmp)))
 
 ;;
@@ -66,11 +65,10 @@
 ;;
 (defun lookuphelper (key node &key default cmp)
   "Returns value associated with key in node subtree, or default/nil"
-  (let
-    ((key2 (treenode-key node))
-     (value (treenode-value node))
-     (left (treenode-left node))
-     (right (treenode-right node)))
+  (let ((key2 (treenode-key node))
+        (value (treenode-value node))
+        (left (treenode-left node))
+        (right (treenode-right node)))
     (cond
       ((null key2)
         default)
@@ -87,13 +85,12 @@
 ;;
 (defun update (key value dict)
   "Returns dict with (key, value) destructively inserted"
-  (let
-    ((tree (treedict-tree dict))
-     (cmp (treedict-cmp dict)))
+  (let ((tree (treedict-tree dict))
+        (cmp (treedict-cmp dict)))
     (make-treedict
      :tree (if tree
-          (updatehelper key value tree cmp)
-          (make-treenode :key key :value value))
+               (updatehelper key value tree cmp)
+               (make-treenode :key key :value value))
      :cmp cmp)))
 
 ;;
@@ -101,12 +98,11 @@
 ;;
 (defun updatehelper (key value node cmp)
   "Returns node with (key, value) destructively inserted"
-  (let
-    ((key2 (treenode-key node))
-     (value2 (treenode-value node))
-     (left (treenode-left node))
-     (right (treenode-right node))
-     (cmp (treenode-cmp node)))
+  (let ((key2 (treenode-key node))
+        (value2 (treenode-value node))
+        (left (treenode-left node))
+        (right (treenode-right node))
+        (cmp (treenode-cmp node)))
     (cond
       ((eq (funcall cmp key key2) 'T)       ; Keys match
         (make-treenode :key key :value value :left left :right right))
