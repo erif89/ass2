@@ -62,7 +62,7 @@
         (lookuphelper key tree :default default :cmp cmp)))
 
 ;;
-;; Help function for lookup
+;; Help function for lookup, recurse over the tree in search of key.
 ;;
 (defun lookuphelper (key node &key default cmp)
     "Returns value associated with key in node subtree, or default/nil"
@@ -77,42 +77,53 @@
             ((eq (funcall cmp key key2) 'T)
                 value)
             ((eq (funcall cmp key key2) 'LT)
-                (if left (lookup key left :key default) default))
+                (if left (lookuphelper key left :key default) default))
             ((eq (funcall cmp key key2) 'GT)
-                (if right (lookup key right :key default) default)))))
+                (if right (lookuphelper key right :key default) default)))))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
 ;; was present before.
 ;;
-(defun update (key value dict &key cmp)
+(defun update (key value dict)
     "Returns dict with (key, value) destructively inserted"
     (let
-        ((key2 (treedict-key dict))
-         (value2 (treedict-value dict))
-         (left (treedict-left dict))
-         (right (treedict-right dict))
+        ((tree (treedict-tree dict))
          (cmp (treedict-cmp dict)))
+        (make-treedict :tree (updatehelper key value tree cmp) :cmp cmp)))
+
+;;
+;; Help function for update. cmp is used for key comparisons in the key.
+;;
+(defun updatehelper (key value node cmp)
+    "Returns node with (key, value) destructively inserted"
+    (let
+        ((key2 (treenode-key node))
+         (value2 (treenode-value node))
+         (left (treenode-left node))
+         (right (treenode-right node))
+         (cmp (treenode-cmp node)))
         (cond
             ((null key2)                                ; Empty tree
-                (make-treedict :key key :value value :cmp cmp))
+                (make-treenode :key key :value value))
             ((eq (funcall cmp key key2) 'T)             ; Keys match
-                (make-treedict :key key :value value
-                 :left left :right right :cmp cmp))
+                (make-treenode :key key :value value :left left :right right))
             ((eq (funcall cmp key key2) 'LT)            ; Update left subtree
                 (if left
-                    (make-treedict :key key2 :value value2 :right right
-                    :left (update key value right) :cmp cmp)
-                    (make-treedict :key key2 :value value2 :right right
-                     :left (make-treedict :key key :value value :cmp cmp)
-                     :cmp cmp)))
+                    (make-treenode :key key2 :value value2
+                     :left (updatehelper key value right)
+                     :right right)
+                    (make-treenode :key key2 :value value2
+                     :left (make-treenode :key key :value value)
+                     :right right)))
             ((eq (funcall cmp key key2) 'GT)            ; Update right subtree
                 (if right
-                    (make-treedict :key key2 :value value2 :left left
-                     :right (update key value right) :cmp cmp)
-                    (make-treedict :key key2 :value value2 :left left
-                     :right (make-treedict :key key :value value :cmp cmp)
-                     :cmp cmp))))))
+                    (make-treenode :key key2 :value value2
+                     :left left
+                     :right (updatehelper key value right))
+                    (make-treenode :key key2 :value value2
+                     :left left
+                     :right (make-treenode :key key :value value)))))))
 
 ;;
 ;; fold the key-value pairs of the dictionary using the function fun, which
