@@ -185,8 +185,6 @@
   nil)  ; TODO implement
 
 
-
-  
 ;;
 ;; Testfunction
 ;;
