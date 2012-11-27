@@ -21,16 +21,6 @@
 (defstruct treenode key value left right)
 
 ;;
-;; Comparison function for reals
-;;
-(defun intcompare (a b)
-    "Returns LT for less than, T for equal and GT for greater than"
-    (cond
-        ((< a b) 'LT)
-        ((= a b) T)
-        ((> a b) 'GT)))
-
-;;
 ;; Comparison function for strings, used as default by create-dictionary
 ;;
 (defun strcompare (a b)
@@ -39,6 +29,16 @@
         ((string< a b) 'LT)
         ((string= a b) T)
         ((string> a b) 'GT)))
+
+;;
+;; Comparison function for reals
+;;
+(defun intcompare (a b)
+    "Returns LT for less than, T for equal and GT for greater than"
+    (cond
+        ((< a b) 'LT)
+        ((= a b) T)
+        ((> a b) 'GT)))
 
 ;;
 ;; Creates a new empty dictionary with compare being the ordering function to
