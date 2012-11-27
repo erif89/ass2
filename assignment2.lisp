@@ -58,7 +58,9 @@
   "Returns dict[key], or default/nil if no such value exists"
   (let ((tree (treedict-tree dict))
         (cmp (treedict-cmp dict)))
-    (lookuphelper key tree :default default :cmp cmp)))
+    (if tree
+        (lookuphelper key tree :default default :cmp cmp)
+        default)))
 
 ;;
 ;; Help function for lookup, recurse over the tree in search of key.
