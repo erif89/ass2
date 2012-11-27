@@ -31,9 +31,9 @@
         ((string> a b) 'GT)))
 
 ;;
-;; Comparison function for reals
+;; Comparison function for numbers
 ;;
-(defun intcompare (a b)
+(defun numcompare (a b)
     "Returns LT for less than, T for equal and GT for greater than"
     (cond
         ((< a b) 'LT)
