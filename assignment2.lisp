@@ -198,6 +198,14 @@
   (assert-equal 'T  (numcompare 12345 12345))
   (assert-equal 'LT (numcompare -1 1))
   (assert-equal 'LT (numcompare 5432 12345))
+  (assert-equal 'T (numcompare 0 0))
+  (assert-equal 'T (numcompare 0.0 0/1))
+  (assert-equal 'LT (numcompare -3.14 -3.0))
+  (assert-equal 'GT (numcompare 3.14 3.0))
+  (assert-equal 'GT (numcompare 1/8 2/17))
+  (assert-equal 'T (numcompare 1/8 0.125))
+  (assert-equal 'T (numcompare 1e10 (+ 1e10 1))) ; limited float precision
+  (assert-equal 'LT (numcompare 1e10 (+ 1e10 1000)))
   )
   
 (define-test strcompare
@@ -207,6 +215,16 @@
   (assert-equal 'T  (strcompare "TTT" "TTT"))
   (assert-equal 'LT (strcompare "AAA" "ABC"))
   (assert-equal 'LT (strcompare "ONM" "ZYX"))
+  (assert-equal 'LT (strcompare "ABC" "abc"))
+  (assert-equal 'T  (strcompare "" ""))
+  (assert-equal 'LT (strcompare " A" "Qwerty"))
+  (assert-equal 'GT (strcompare
+                     "haveidonethislongenoughnoworisitagoodideatoaddmoretests"
+                     "haveidonethislongenoughnoworisitagoodideatoaddmoretest"))
+  (assert-equal 'LT (strcompare "" " "))
+  (assert-equal 'GT (strcompare " " ""))
+  (assert-equal 'GT (strcompare "_" " "))
+  (assert-equal 'T (strcompare "  " "  "))
   )
   
 (define-test create_with_numkey
