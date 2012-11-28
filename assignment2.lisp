@@ -206,6 +206,8 @@
   (assert-equal 'T (numcompare 1/8 0.125))
   (assert-equal 'T (numcompare 1e10 (+ 1e10 1))) ; limited float precision
   (assert-equal 'LT (numcompare 1e10 (+ 1e10 1000)))
+  (assert-error 'error (numcompare 0 "")) ; "" is not a number
+  (assert-error 'error (numcompare nil nil)) ; nil is not a number
   )
   
 (define-test strcompare
@@ -228,10 +230,25 @@
   (assert-equal 'T (strcompare "1234" "1234"))
   (assert-equal 'LT (strcompare "123" "1234"))
   (assert-equal 'GT (strcompare "321" "1234"))
+  (assert-equal 'LT (strcompare "" ()))
+  (assert-equal 'LT (strcompare "ABC" ()))
+  (assert-equal 'GT (strcompare nil ""))
+  (assert-equal 'LT (strcompare nil "Q"))
+  (assert-error 'error (strcompare 0 "")) ; 0 is not a string
   )
   
 (define-test create_with_numkey
   (let ((dict (create-dictionary :compare #'numcompare)))
     (assert-equal "one" (lookup 1 (update 1 "one" dict)) )
+  )
+)
+
+(define-test fold
+  (let ((dict (create-dictionary :compare #'numcompare))
+        (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
+        (dict3 (update "key" "a" (create-dictionary))))
+    (assert-error 'error (fold #'+ dict 0)) ; empty dict
+    (assert-equal 2 (fold #'+ dict2 0))
+    (assert-error 'error (fold #'+ dict3 "")) ; '+' not applicable to strings
   )
 )
