@@ -188,7 +188,7 @@
 
 
 ;;
-;; Testfunction
+;; Test functions
 ;;
 
 (define-test numcompare
@@ -225,6 +225,9 @@
   (assert-equal 'GT (strcompare " " ""))
   (assert-equal 'GT (strcompare "_" " "))
   (assert-equal 'T (strcompare "  " "  "))
+  (assert-equal 'T (strcompare "1234" "1234"))
+  (assert-equal 'LT (strcompare "123" "1234"))
+  (assert-equal 'GT (strcompare "321" "1234"))
   )
   
 (define-test create_with_numkey
