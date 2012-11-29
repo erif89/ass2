@@ -140,9 +140,10 @@
         initial)))
 
 ;;
-;; Help function to fold.
+;; Help function to fold. Applies fun to key-values in preorder walk of node.
 ;;
 (defun foldhelper (fun node sofar)
+  "Returns fun(k1, v2, fun(k2, v2, ...sofar...)) for key-values in node"
   (let ((left (treenode-left node))
         (right (treenode-right node))
         (res (funcall fun (treenode-key node) (treenode-value node) sofar)))
