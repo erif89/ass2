@@ -238,11 +238,17 @@
   )
 
 (define-test create-dictionary
-  (let ((dict (create-dictionary :compare #'numcompare))
-        (dict2 (create-dictionary)))
-    (assert-equal nil (treedict-tree dict))
-    (assert-equal #'numcompare (treedict-cmp dict))
-    (assert-equal #'strcompare (treedict-cmp dict2))
+  (let ((dict )
+        (dict2 )
+        (dict3 (create-dictionary)))
+    (assert-equal nil (treedict-tree (create-dictionary)))
+    (assert-equal nil (treedict-tree
+      (create-dictionary :compare #'numcompare)))
+    (assert-equal #'numcompare (treedict-cmp 
+      (create-dictionary :compare #'numcompare)))
+    (assert-equal #'strcompare (treedict-cmp (create-dictionary)))
+    (assert-equal #'strcompare (treedict-cmp 
+      (create-dictionary :compare nil)))
   )
 )
 
