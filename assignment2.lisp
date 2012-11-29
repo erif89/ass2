@@ -146,12 +146,12 @@
         (right (treenode-right node))
         (res (funcall fun (treenode-key node) (treenode-value node) sofar)))
     (if left
-        (let ((res2 (foldhelper (fun left res))))
+        (let ((res2 (foldhelper fun left res)))
           (if right
-              (foldhelper (fun right res2))
+              (foldhelper fun right res2)
               res2))
         (if right
-            (foldhelper (fun right res))
+            (foldhelper fun right res)
             res))))
 
 ;;
@@ -327,7 +327,8 @@
 (define-test fold
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
-        (dict3 (update "key" "a" (create-dictionary))))
+        (dict3 (update "key" "a" (create-dictionary)))
+        (dict4 (update "aaa" "bb" (update "key" "a" (create-dictionary)))))
     (assert-equal 0 (fold #'sum3 dict 0)) ; empty dict
     (assert-equal "A" (fold #'sum3 dict "A")) ; empty dict, incompatible type
     (assert-equal 2 (fold #'sum3 dict2 0))
@@ -335,6 +336,9 @@
     (assert-equal 1 (fold #'sumpos dict2 0))
     (assert-error 'error (fold #'sum3 dict3 "")) ; '+' not applicable to strings
     (assert-equal "keya" (fold #'concat3 dict3 ""))
+    (assert-equal "keyadd" (fold #'concat3 dict3 "dd"))
+    (assert-equal "aaabbkeya" (fold #'concat3 dict4 ""))
+    (assert-equal 10 (length (fold #'concat3 dict4 "q")))
   )
 )
 
