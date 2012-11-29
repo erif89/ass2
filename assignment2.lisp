@@ -133,7 +133,10 @@
 ;;
 (defun fold (fun dict initial)
   "Returns fun(k1, v2, fun(k2, v2, ...initial...)) for key-values in dict"
-  (foldhelper fun (treedict-tree dict) initial))
+  (let ((tree (treedict-tree dict)))
+    (if tree
+        (foldhelper fun tree initial)
+        initial)))
 
 ;;
 ;; Help function to fold.
@@ -325,7 +328,8 @@
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
         (dict3 (update "key" "a" (create-dictionary))))
-    (assert-error 'error (fold #'sum3 dict 0)) ; empty dict
+    (assert-equal 0 (fold #'sum3 dict 0)) ; empty dict
+    (assert-equal "A" (fold #'sum3 dict "A")) ; empty dict, incompatible type
     (assert-equal 2 (fold #'sum3 dict2 0))
     (assert-equal 4 (fold #'sum3 dict2 2))
     (assert-equal 1 (fold #'sumpos dict2 0))
