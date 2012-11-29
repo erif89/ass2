@@ -133,7 +133,23 @@
 ;;
 (defun fold (fun dict initial)
   "Returns fun(k1, v2, fun(k2, v2, ...initial...)) for key-values in dict"
-  nil)  ; TODO implement
+  (foldhelper fun (treedict-tree dict) initial))
+
+;;
+;; Help function to fold.
+;;
+(defun foldhelper (fun node sofar)
+  (let ((left (treenode-left node))
+        (right (treenode-right node))
+        (res (funcall fun (treenode-key node) (treenode-value node) sofar)))
+    (if left
+        (let ((res2 (foldhelper (fun left res))))
+          (if right
+              (foldhelper (fun right res2))
+              res2))
+        (if right
+            (foldhelper (fun right res))
+            res))))
 
 ;;
 ;; Returns a new dictionary that is more balanced (if needed).
