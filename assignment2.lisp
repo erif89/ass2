@@ -236,7 +236,16 @@
   (assert-equal 'LT (strcompare nil "Q"))
   (assert-error 'error (strcompare 0 "")) ; 0 is not a string
   )
-  
+
+(define-test create-dictionary
+  (let ((dict (create-dictionary :compare #'numcompare))
+        (dict2 (create-dictionary)))
+    (assert-equal nil (treedict-tree dict))
+    (assert-equal #'numcompare (treedict-cmp dict))
+    (assert-equal #'strcompare (treedict-cmp dict2))
+  )
+)
+
 (define-test create_with_numkey
   (let ((dict (create-dictionary :compare #'numcompare)))
     (assert-equal "one" (lookup 1 (update 1 "one" dict)) )
