@@ -107,7 +107,8 @@
         (right (treenode-right node)))
     (cond
       ((eq (funcall cmp key key2) 'T)       ; Keys match
-        (make-treenode :key key :value value :left left :right right))
+        (make-treenode :key key :value value
+         :left left :right right :size size))
       ((eq (funcall cmp key key2) 'LT)      ; Update left subtree
         (if left  ; End of recursion if subtree is empty
           (make-treenode :key key2 :value value2 :size (+ size 1)
