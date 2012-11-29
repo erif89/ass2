@@ -278,6 +278,15 @@
      :cmp #'numcompare))
     (write-to-string (update 4 "four" (update 3 "three" (update 2 "two"
      (update 1 "one" (create-dictionary :compare #'numcompare)))))))
+  (assert-equal
+    (write-to-string (make-treedict
+     :tree (make-treenode :key 2 :value "two" :size 4
+      :left (make-treenode :key 1 :value "one" :size 1)
+      :right (make-treenode :key 3 :value "three" :size 2
+      :right (make-treenode :key 4 :value "four" :size 1)))
+     :cmp #'numcompare))
+    (write-to-string (update 4 "four" (update 3 "three" (update 1 "one"
+     (update 2 "two" (create-dictionary :compare #'numcompare)))))))
 )
 
 (define-test create_with_numkey
