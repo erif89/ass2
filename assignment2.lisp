@@ -103,8 +103,7 @@
   (let ((key2 (treenode-key node))
         (value2 (treenode-value node))
         (left (treenode-left node))
-        (right (treenode-right node))
-        (cmp (treenode-cmp node)))
+        (right (treenode-right node)))
     (cond
       ((eq (funcall cmp key key2) 'T)       ; Keys match
         (make-treenode :key key :value value :left left :right right))
@@ -254,7 +253,12 @@
 
 (define-test create_with_numkey
   (let ((dict (create-dictionary :compare #'numcompare)))
-    (assert-equal "one" (lookup 1 (update 1 "one" dict)) )
+    (assert-equal "one" (lookup 1 (update 1 "one" dict)))
+    (assert-equal 0 (list-length (treedict-tree dict)))
+    (assert-equal "one" (lookup 1 (update 1 "one" (update 2 "two" dict))))
+    (assert-equal "two" (lookup 2 (update 1 "one" (update 2 "two" dict))))
+    (assert-equal "one" (lookup 1 (update 2 "two" (update 1 "one" dict))))
+    (assert-equal "two" (lookup 2 (update 2 "two" (update 1 "one" dict))))
   )
 )
 
