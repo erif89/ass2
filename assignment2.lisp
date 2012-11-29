@@ -296,13 +296,15 @@
   )
 )
 
+(defun +++ (a b c) (+ a (+ b c)))
+
 (define-test fold
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
         (dict3 (update "key" "a" (create-dictionary))))
     (assert-error 'error (fold #'+ dict 0)) ; empty dict
-    (assert-equal 2 (fold #'+ dict2 0))
-    (assert-error 'error (fold #'+ dict3 "")) ; '+' not applicable to strings
+    (assert-equal 2 (fold #'+++ dict2 0))
+    (assert-error 'error (fold #'+++ dict3 "")) ; '+' not applicable to strings
   )
 )
 
