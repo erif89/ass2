@@ -165,13 +165,27 @@
         dict)))
 
 ;;
-;; Help function to rebalance.
+;; Help function to rebalance. Returns node reordered to be "height-balanced".
+;;
+;; A well-formed binary tree is said to be "height-balanced" if (1) it is
+;; empty, or (2) its left and right children are height-balanced and the
+;; height of the left tree is within 1 of the height of the right tree.
 ;;
 (defun rebalancehelper (node)
-  (let ((size (treenode-size node))
+  (let ((key (treenode-key node))
+        (value (treenode-value node))
+        (size (treenode-size node))
         (left (treenode-left node))
         (right (treenode-right node)))
-    node))
+    (cond
+      ((< size 3) node) ; single node or single child is balanced
+      ((or (not left) 
+           (and right 
+                (< (treenode-size left) (treenode-size right))))
+        (left-rotate (make-treenode :key key :value value :size size :left (rebalancehelper left) :right (rebalancehelper right))
+      (t (right-rotate node)))))
+        
+          
 
 ;;
 ;; Returns the keys of the dictionary in a list.
