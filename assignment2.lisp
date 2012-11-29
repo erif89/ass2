@@ -305,3 +305,23 @@
     (assert-error 'error (fold #'+ dict3 "")) ; '+' not applicable to strings
   )
 )
+
+(define-test rebalance
+  (assert-true nil)
+)
+
+(define-test keys
+  (assert-true nil)
+)
+
+(define-test samekeys
+  (assert-true nil)
+)
+
+(define-test with-keys
+  (assert-true nil)
+)
+
+(define-test match-pattern
+  (assert-true nil)
+)
