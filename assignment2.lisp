@@ -133,20 +133,23 @@
 ;;
 (defun fold (fun dict initial)
   "Returns fun(k1, v2, fun(k2, v2, ...initial...)) for key-values in dict"
-  (cond
-    ((and (treedict-p dict) (treedict-tree dict))
-      (fold fun (treedict-tree dict) initial))
-    ((treedict-p dict) initial)
-    (t (let ((left (treenode-left dict))
-             (right (treenode-right dict))
-             (key (treenode-key dict))
-             (value (treenode-value dict)))
-         (let ((res (funcall fun key value initial)))
-           (cond
-             ((and left right) (fold fun right (fold fun left res)))
-             (left (fold fun left res))
-             (right (fold fun right res))
-             (t res)))))))
+  (let ((tree (treedict-tree dict)))
+    (if tree
+        (foldhelper fun tree initial)
+        initial)))
+
+;;
+;; Help function to fold.
+;;
+(defun foldhelper (fun node sofar)
+  (let ((left (treenode-left node))
+        (right (treenode-right node))
+        (res (funcall fun (treenode-key node) (treenode-value node) sofar)))
+    (cond
+      ((and left right) (foldhelper fun right (foldhelper fun left res)))
+      (left (foldhelper fun left res))
+      (right (foldhelper fun right res))
+      (t res))))
 
 ;;
 ;; Returns a new dictionary that is more balanced (if needed).
