@@ -77,9 +77,9 @@
       ((eq (funcall cmp key key2) 'T)
         value)
       ((eq (funcall cmp key key2) 'LT)
-        (if left (lookuphelper key left :key default) default))
+        (if left (lookuphelper key left :default default :cmp cmp) default))
       ((eq (funcall cmp key key2) 'GT)
-        (if right (lookuphelper key right :key default) default)))))
+        (if right (lookuphelper key right :default default :cmp cmp) default)))))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
@@ -110,7 +110,7 @@
       ((eq (funcall cmp key key2) 'LT)      ; Update left subtree
         (if left  ; End of recursion if subtree is empty
           (make-treenode :key key2 :value value2
-           :left (updatehelper key value right)
+           :left (updatehelper key value right cmp)
            :right right)
           (make-treenode :key key2 :value value2
            :left (make-treenode :key key :value value)
@@ -119,7 +119,7 @@
         (if right
           (make-treenode :key key2 :value value2
            :left left
-           :right (updatehelper key value right))
+           :right (updatehelper key value right cmp))
           (make-treenode :key key2 :value value2
            :left left
            :right (make-treenode :key key :value value)))))))
