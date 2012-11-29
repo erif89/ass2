@@ -325,7 +325,9 @@
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
         (dict3 (update "key" "a" (create-dictionary)))
-        (dict4 (update "aaa" "bb" (update "key" "a" (create-dictionary)))))
+        (dict4 (update "aaa" "bb" (update "key" "a" (create-dictionary))))
+        (dict5 (update "1" "23" (update "a" "b" (update "c" "d"
+          (create-dictionary))))))
     (assert-equal 0 (fold #'sum3 dict 0)) ; empty dict
     (assert-equal "A" (fold #'sum3 dict "A")) ; empty dict, incompatible type
     (assert-equal 2 (fold #'sum3 dict2 0))
@@ -335,7 +337,8 @@
     (assert-equal "keya" (fold #'concat3 dict3 ""))
     (assert-equal "keyadd" (fold #'concat3 dict3 "dd"))
     (assert-equal "aaabbkeya" (fold #'concat3 dict4 ""))
-    (assert-equal 10 (length (fold #'concat3 dict4 "q")))
+    (assert-equal 10 (length (fold #'concat3 dict4 "q"))
+    (assert-equal "123abcdefg" (fold #'concat3 dict5 "efg")))
   )
 )
 
