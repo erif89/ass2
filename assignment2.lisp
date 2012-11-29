@@ -251,6 +251,18 @@
   )
 )
 
+(define-test update
+  (assert-equal
+    (write-to-string (make-treedict
+     :tree (make-treenode :key 1 :value "one"
+      :right (make-treenode :key 2 :value "two"
+      :right (make-treenode :key 3 :value "three"
+      :right (make-treenode :key 4 :value "four"))))
+     :cmp #'numcompare))
+    (write-to-string (update 4 "four" (update 3 "three" (update 2 "two"
+     (update 1 "one" (create-dictionary :compare #'numcompare)))))))
+)
+
 (define-test create_with_numkey
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 "one" (update 2 "two"
@@ -265,11 +277,7 @@
           (update 1 "one" (create-dictionary :compare #'numcompare)))))))
     (assert-equal "one" (lookup 1 (update 1 "one" dict)))
     (assert-equal 0 (list-length (treedict-tree dict)))
-    (assert-equal 2 (list-length (treedict-tree dict2)))
-    (assert-equal 2 (list-length (treedict-tree dict3)))
-    (assert-equal 3 (list-length (treedict-tree dict4)))
-    (assert-equal 4 (list-length (treedict-tree dict5)))
-    (assert-equal 4 (list-length (treedict-tree dict6)))
+    (assert-false (list-length (treedict-tree dict)))
     (assert-equal "one" (lookup 1 dict2))
     (assert-equal "two" (lookup 2 dict2))
     (assert-equal "one" (lookup 1 dict3))
