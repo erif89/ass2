@@ -270,6 +270,9 @@
 
 (define-test update
   (assert-equal
+    (write-to-string (update "a" "b" (update "a" "b" (create-dictionary))))
+    (write-to-string (update "a" "b" (create-dictionary))))
+  (assert-equal
     (write-to-string (make-treedict
      :tree (make-treenode :key 1 :value "one" :size 4
       :right (make-treenode :key 2 :value "two" :size 3
