@@ -277,7 +277,7 @@
           (update 1 "one" (create-dictionary :compare #'numcompare)))))))
     (assert-equal "one" (lookup 1 (update 1 "one" dict)))
     (assert-equal 0 (list-length (treedict-tree dict)))
-    (assert-false (list-length (treedict-tree dict)))
+    (assert-false (treedict-tree dict))
     (assert-equal "one" (lookup 1 dict2))
     (assert-equal "two" (lookup 2 dict2))
     (assert-equal "one" (lookup 1 dict3))
