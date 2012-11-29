@@ -110,7 +110,7 @@
       ((eq (funcall cmp key key2) 'LT)      ; Update left subtree
         (if left  ; End of recursion if subtree is empty
           (make-treenode :key key2 :value value2
-           :left (updatehelper key value right cmp)
+           :left (updatehelper key value left cmp)
            :right right)
           (make-treenode :key key2 :value value2
            :left (make-treenode :key key :value value)
