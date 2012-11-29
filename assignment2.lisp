@@ -59,13 +59,13 @@
   (let ((tree (treedict-tree dict))
         (cmp (treedict-cmp dict)))
     (if tree
-        (lookuphelper key tree :default default :cmp cmp)
+        (lookuphelper key tree default cmp)
         default)))
 
 ;;
 ;; Help function for lookup, recurse over the tree in search of key.
 ;;
-(defun lookuphelper (key node &key default cmp)
+(defun lookuphelper (key node default cmp)
   "Returns value associated with key in node subtree, or default/nil"
   (let ((key2 (treenode-key node))
         (value (treenode-value node))
@@ -77,9 +77,9 @@
       ((eq (funcall cmp key key2) 'T)
         value)
       ((eq (funcall cmp key key2) 'LT)
-        (if left (lookuphelper key left :default default :cmp cmp) default))
+        (if left (lookuphelper key left default cmp) default))
       ((eq (funcall cmp key key2) 'GT)
-        (if right (lookuphelper key right :default default :cmp cmp) default)))))
+        (if right (lookuphelper key right default cmp) default)))))
 
 ;;
 ;; Creates a new dictionary where key maps to value, regardless of if it
@@ -252,13 +252,39 @@
 )
 
 (define-test create_with_numkey
-  (let ((dict (create-dictionary :compare #'numcompare)))
+  (let ((dict (create-dictionary :compare #'numcompare))
+        (dict2 (update 1 "one" (update 2 "two"
+          (create-dictionary :compare #'numcompare))))
+        (dict3 (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare))))
+        (dict4 (update 3 "three" (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare)))))
+        (dict5 (update 4 "four" (update 3 "three" (update 2 "two"
+          (update 1 "one" (create-dictionary :compare #'numcompare))))))
+        (dict6 (update 2 "two" (update 3 "three" (update 4 "four"
+          (update 1 "one" (create-dictionary :compare #'numcompare)))))))
     (assert-equal "one" (lookup 1 (update 1 "one" dict)))
     (assert-equal 0 (list-length (treedict-tree dict)))
-    (assert-equal "one" (lookup 1 (update 1 "one" (update 2 "two" dict))))
-    (assert-equal "two" (lookup 2 (update 1 "one" (update 2 "two" dict))))
-    (assert-equal "one" (lookup 1 (update 2 "two" (update 1 "one" dict))))
-    (assert-equal "two" (lookup 2 (update 2 "two" (update 1 "one" dict))))
+    (assert-equal 2 (list-length (treedict-tree dict2)))
+    (assert-equal 2 (list-length (treedict-tree dict3)))
+    (assert-equal 3 (list-length (treedict-tree dict4)))
+    (assert-equal 4 (list-length (treedict-tree dict5)))
+    (assert-equal 4 (list-length (treedict-tree dict6)))
+    (assert-equal "one" (lookup 1 dict2))
+    (assert-equal "two" (lookup 2 dict2))
+    (assert-equal "one" (lookup 1 dict3))
+    (assert-equal "two" (lookup 2 dict3))
+    (assert-equal "one" (lookup 1 dict4))
+    (assert-equal "two" (lookup 2 dict4))
+    (assert-equal "three" (lookup 3 dict4))
+    (assert-equal "one" (lookup 1 dict5))
+    (assert-equal "two" (lookup 2 dict5))
+    (assert-equal "three" (lookup 3 dict5))
+    (assert-equal "four" (lookup 4 dict5))
+    (assert-equal "four" (lookup 4 dict6))
+    (assert-equal "three" (lookup 3 dict6))
+    (assert-equal "two" (lookup 2 dict6))
+    (assert-equal "one" (lookup 1 dict6))
   )
 )
 
