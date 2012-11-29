@@ -159,7 +159,38 @@
 ;;
 (defun rebalance (dict)
   "Returns dict with depth of each child differing with at most 1."
-  nil)  ; TODO implement
+  (cond
+    ((null dict) nil)
+    ((treedict-p dict)
+      (make-treedict
+       :tree (rebalance (treedict-tree dict))
+       :cmp (treedict-cmp dict)))
+    (t (let ((left (treenode-left dict))
+             (right (treenode-right dict)))
+         (cond
+           ((and left right)
+            (let ((lsize (treenode-size left))
+                  (rsize (treenode-size right)))
+              (rebalancehelper dict lsize rsize)))
+           (left (rebalancehelper dict (treenode-size left) 0))
+           (right (rebalancehelper dict 0 (treenode-size right)))
+           (t dict))))))
+
+;;
+;; Help function to rebalance.
+;;
+(defun rebalancehelper (node lsize rsize)
+  (let ((size (treenode-size node))
+         (left (treenode-left node))
+         (right (treenode-right node)))
+     (cond
+       ((and left right)
+        (let ((lsize (treenode-size left))
+              (rsize (treenode-size right)))
+          (rebalancehelper node size lsize rsize)))
+       (left (rebalancehelper node size (treenode-size left) 0))
+       (right (rebalancehelper node size 0 (treenode-size right)))
+       (t node))))
 
 ;;
 ;; Returns the keys of the dictionary in a list.
