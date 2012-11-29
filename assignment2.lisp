@@ -178,14 +178,71 @@
         (left (treenode-left node))
         (right (treenode-right node)))
     (cond
-      ((< size 3) node) ; single node or single child is balanced
-      ((or (not left) 
-           (and right 
-                (< (treenode-size left) (treenode-size right))))
-        (left-rotate (make-treenode :key key :value value :size size :left (rebalancehelper left) :right (rebalancehelper right))
-      (t (right-rotate node)))))
-        
-          
+      ((not (or left right)) node) ; leaf
+      ((not left) ; right skewed
+        (left-rotate (make-treenode :key key :value value :size size
+          :right (rebalancehelper right))))
+      ((not right) ; left skewed
+        (right-rotate (make-treenode :key key :value value :size size
+          :left (rebalancehelper left))))
+      ((< (abs (- (treenode-size left) (treenode-size right))) 2) ; balanced
+        (make-treenode :key key :value value :size size
+          :left (rebalancehelper left) :right (rebalancehelper right)))
+      ((< (treenode-size left) (treenode-size right)) ; right skewed
+        (left-rotate (make-treenode :key key :value value :size size
+          :left (rebalancehelper left) :right (rebalancehelper right))))
+      (t ; left skewed
+        (right-rotate (make-treenode :key key :value value :size size
+          :left (rebalancehelper left) :right (rebalancehelper right)))))))
+
+;;
+;; Performs left rotation of binary tree node.
+;; Precondition: right child is not nil
+;;
+(defun left-rotate (node)
+  (let ((key (treenode-key node))
+        (value (treenode-value node))
+        (size (treenode-size node))
+        (left (treenode-left node))
+        (right (treenode-right node)))
+    (let ((rkey (treenode-key right))
+          (rvalue (treenode-value right))
+          (rsize (treenode-size right))
+          (lsize (if left (treenode-size left) 0))
+          (rleft (treenode-left right))
+          (rright (treenode-right right)))
+      (make-treenode :key rkey :value rvalue :size (+ 
+          (+ lsize (treenode-size rleft))
+          (+ (treenode-size rright) 2))
+        :left (make-treenode :key key :value value
+          :size (+ (+ lsize 1) (treenode-size rleft))
+          :left left :right rleft)
+        :right rright))))
+
+;;
+;; Performs right rotation of binary tree node.
+;; Precondition: left child is not nils
+;;
+(defun right-rotate (node)
+  (let ((key (treenode-key node))
+        (value (treenode-value node))
+        (size (treenode-size node))
+        (right (treenode-right node))
+        (left (treenode-left node)))
+    (let ((lkey (treenode-key left))
+          (lvalue (treenode-value left))
+          (lsize (treenode-size left))
+          (rsize (if right (treenode-size right) 0))
+          (lright (treenode-right left))
+          (lleft (treenode-left left)))
+      (make-treenode :key lkey :value lvalue :size (+ 
+          (+ rsize (treenode-size lright))
+          (+ (treenode-size lleft) 2))
+        :right (make-treenode :key key :value value
+          :size (+ (+ rsize 1) (treenode-size lright))
+          :right right :left lright)
+        :left rleft))))
+    
 
 ;;
 ;; Returns the keys of the dictionary in a list.
