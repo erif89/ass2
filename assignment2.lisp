@@ -18,7 +18,7 @@
 ;; A treenode is a key-value store with two children treenodes. Leaf children
 ;; are represented as nil.
 ;;
-(defstruct treenode key value left right)
+(defstruct treenode key value size left right)
 
 ;;
 ;; Comparison function for strings, used as default by create-dictionary
@@ -92,7 +92,7 @@
     (make-treedict
      :tree (if tree
                (updatehelper key value tree cmp)
-               (make-treenode :key key :value value))
+               (make-treenode :key key :value value :size 1))
      :cmp cmp)))
 
 ;;
@@ -102,6 +102,7 @@
   "Returns node with (key, value) destructively inserted"
   (let ((key2 (treenode-key node))
         (value2 (treenode-value node))
+        (size (treenode-size node))
         (left (treenode-left node))
         (right (treenode-right node)))
     (cond
@@ -109,20 +110,20 @@
         (make-treenode :key key :value value :left left :right right))
       ((eq (funcall cmp key key2) 'LT)      ; Update left subtree
         (if left  ; End of recursion if subtree is empty
-          (make-treenode :key key2 :value value2
+          (make-treenode :key key2 :value value2 :size (+ size 1)
            :left (updatehelper key value left cmp)
            :right right)
-          (make-treenode :key key2 :value value2
-           :left (make-treenode :key key :value value)
+          (make-treenode :key key2 :value value2 :size (+ size 1)
+           :left (make-treenode :key key :value value :size 1)
            :right right)))
       ((eq (funcall cmp key key2) 'GT)      ; Update right subtree
         (if right
-          (make-treenode :key key2 :value value2
+          (make-treenode :key key2 :value value2 :size (+ size 1)
            :left left
            :right (updatehelper key value right cmp))
-          (make-treenode :key key2 :value value2
+          (make-treenode :key key2 :value value2 :size (+ size 1)
            :left left
-           :right (make-treenode :key key :value value)))))))
+           :right (make-treenode :key key :value value :size 1)))))))
 
 ;;
 ;; fold the key-value pairs of the dictionary using the function fun, which
@@ -254,10 +255,10 @@
 (define-test update
   (assert-equal
     (write-to-string (make-treedict
-     :tree (make-treenode :key 1 :value "one"
-      :right (make-treenode :key 2 :value "two"
-      :right (make-treenode :key 3 :value "three"
-      :right (make-treenode :key 4 :value "four"))))
+     :tree (make-treenode :key 1 :value "one" :size 4
+      :right (make-treenode :key 2 :value "two" :size 3
+      :right (make-treenode :key 3 :value "three" :size 2
+      :right (make-treenode :key 4 :value "four" :size 1))))
      :cmp #'numcompare))
     (write-to-string (update 4 "four" (update 3 "three" (update 2 "two"
      (update 1 "one" (create-dictionary :compare #'numcompare)))))))
@@ -296,15 +297,15 @@
   )
 )
 
-(defun +++ (a b c) (+ a (+ b c)))
+(defun sum3 (a b c) (+ a (+ b c)))
 
 (define-test fold
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
         (dict3 (update "key" "a" (create-dictionary))))
-    (assert-error 'error (fold #'+ dict 0)) ; empty dict
-    (assert-equal 2 (fold #'+++ dict2 0))
-    (assert-error 'error (fold #'+++ dict3 "")) ; '+' not applicable to strings
+    (assert-error 'error (fold #'sum3 dict 0)) ; empty dict
+    (assert-equal 2 (fold #'sum3 dict2 0))
+    (assert-error 'error (fold #'sum3 dict3 "")) ; '+' not applicable to strings
   )
 )
 
