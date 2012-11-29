@@ -452,6 +452,11 @@
   (assert-true nil)
 )
 
+(define-test left-rotate
+  (assert-true (left-rotate (treedict-tree
+    (update "b" "b" (update "a" "a" (create-dictionary))))))
+)
+
 (define-test keys
   (assert-true nil)
 )
