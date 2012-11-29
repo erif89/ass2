@@ -145,14 +145,11 @@
   (let ((left (treenode-left node))
         (right (treenode-right node))
         (res (funcall fun (treenode-key node) (treenode-value node) sofar)))
-    (if left
-        (let ((res2 (foldhelper fun left res)))
-          (if right
-              (foldhelper fun right res2)
-              res2))
-        (if right
-            (foldhelper fun right res)
-            res))))
+    (cond
+      ((and left right) (foldhelper fun right (foldhelper fun left res)))
+      (left (foldhelper fun left res))
+      (right (foldhelper fun right res))
+      (t res))))
 
 ;;
 ;; Returns a new dictionary that is more balanced (if needed).
