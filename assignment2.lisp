@@ -212,10 +212,10 @@
           (rleft (treenode-left right))
           (rright (treenode-right right)))
       (make-treenode :key rkey :value rvalue :size (+ 
-          (+ lsize (treenode-size rleft))
-          (+ (treenode-size rright) 2))
+          (+ lsize (if rleft (treenode-size rleft) 0))
+          (+ (if rright (treenode-size rright) 0) 2))
         :left (make-treenode :key key :value value
-          :size (+ (+ lsize 1) (treenode-size rleft))
+          :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
           :left left :right rleft)
         :right rright))))
 
