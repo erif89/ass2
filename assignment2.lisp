@@ -299,6 +299,8 @@
 
 (defun sum3 (a b c) (+ a (+ b c)))
 
+(defun concat3 (a b c) (concatenate 'string a b c))
+
 (define-test fold
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 1 (create-dictionary :compare #'numcompare)))
@@ -306,6 +308,7 @@
     (assert-error 'error (fold #'sum3 dict 0)) ; empty dict
     (assert-equal 2 (fold #'sum3 dict2 0))
     (assert-error 'error (fold #'sum3 dict3 "")) ; '+' not applicable to strings
+    (assert-equal "keya" (fold #'concat3 dict3 ""))
   )
 )
 
