@@ -223,10 +223,7 @@
 ;; 
 (defun keys (dict)
   "Returns list of keys in dict"
-  (let ((tree (treedict-tree dict)))
-    (if tree
-        (keyshelper tree nil)
-        nil)))
+  (keyshelper (treedict-tree dict) nil))
 
 ;;
 ;; Help function for keys, recurse over the tree to build a list of all keys.
