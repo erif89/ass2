@@ -426,9 +426,37 @@
 )
 
 (define-test rotate
-  (assert-true (rotate (treedict-tree
-    (update "b" "b" (update "a" "a" (create-dictionary))))
-    t))
+  (let ((dict (update "b" "b" (update "a" "a" (create-dictionary))))
+        (dict2 (update "a" "a" (update "b" "b" (create-dictionary)))))
+  (assert-equal
+    (write-to-string (treedict-tree dict2))
+    (write-to-string (rotate (treedict-tree dict) t))) ;rotate left
+  (assert-equal
+    (write-to-string (treedict-tree dict))
+    (write-to-string (rotate (treedict-tree dict2) nil))) ; rotate right
+  )
+)
+
+(define-test keys
+  (let ((dict (create-dictionary :compare #'numcompare))
+        (dict2 (update 1 "one" (update 2 "two"
+          (create-dictionary :compare #'numcompare))))
+        (dict3 (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare))))
+        (dict4 (update 3 "three" (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare)))))
+        (dict5 (update 4 "four" (update 3 "three" (update 2 "two"
+          (update 1 "one" (create-dictionary :compare #'numcompare))))))
+        (dict6 (update 93 "two" (update 118 "three" (update 7 "four"
+          (update 42 "one" (create-dictionary :compare #'numcompare)))))))
+    (assert-equal nil  (keys dict))
+    (assert-equal nil (set-difference '(1) (keys (update 1 "one" dict))))
+    (assert-equal nil (set-difference '(1 2) (keys dict2)))
+    (assert-equal nil (set-difference '(1 2) (keys dict3)))
+    (assert-equal nil (set-difference '(1 2 3) (keys dict4)))
+    (assert-equal nil (set-difference '(1 2 3 4) (keys dict5)))
+    (assert-equal nil (set-difference '(7 93 42 118) (keys dict6)))
+  )
 )
 
 (define-test keys
