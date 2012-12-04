@@ -245,7 +245,36 @@
 ;;
 (defun samekeys (dict1 dict2)
   "Returns T if dict1 has the same keys as dict2, nil otherwise"
-  nil)  ; TODO implement
+  (let ((root1 (treedict-tree dict1))
+       (root2 (treedict-tree dict2))
+       (size1 (treenode-size (treedict-tree dict1)))
+       (size2 (treenode-size (treedict-tree dict2)))
+       (cmp1   (treedict-cmp dict1))
+       (cmp2   (treedict-cmp dict2)))
+    (cond
+    ((and (eq cmp1 cmp2) (= size1 size2)) (samekeyshelper root1 root2 cmp1))
+    ('T nil
+  ))))
+
+;;
+;; Help function for keys, recurse over the tree to build a list of all keys.
+;;
+(defun samekeyshelper (node1 node2 cmp)
+  "Returns value associated with key in node subtree, or default/nil"
+  (cond
+    ((and (null node1) (null node2)) 'T)
+    ((or (null node1) (null node2)) nil)
+    ('T 
+      (let ((key1 (treenode-key node1))
+           (key2 (treenode-key node2)))
+        (cond
+          ((eq (funcall cmp key1 key2) 'LT) (samekeyshelper node1 (treenode-left node2) cmp))
+          ((eq (funcall cmp key1 key2) 'GT) (samekeyshelper (treenode-left node1) node2 cmp))
+          ((eq (funcall cmp key1 key2) 'T)  
+            (if (and(eq (samekeyshelper (treenode-left node1) (treenode-left node2) cmp) 'T)
+                 (eq (samekeyshelper (treenode-left node1) (treenode-left node2) cmp) 'T)) 'T nil))
+          )))))
+          
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
@@ -470,12 +499,33 @@
   )
 )
 
-(define-test keys
-  (assert-true nil)
-)
-
 (define-test samekeys
-  (assert-true nil)
+  (let ((dict (create-dictionary :compare #'numcompare))
+        (dict2 (update 1 "one" (update 2 "two"
+          (create-dictionary :compare #'numcompare))))
+        (dict3 (update 1 "two" (update 2 "one"
+          (create-dictionary :compare #'numcompare))))
+        (dict4 (update 3 "three" (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare)))))
+        (dict5 (update 4 "four" (update 3 "three" (update 2 "two"
+          (update 1 "one" (create-dictionary :compare #'numcompare))))))
+        (dict6 (update 1 "two" (update 3 "three" (update 2 "four"
+          (update 4 "one" (create-dictionary :compare #'numcompare))))))
+        (dict7 (update 3 "three" (update 1 "one" (update 2 "four"
+          (update 4 "one" (create-dictionary :compare #'numcompare))))))
+        (dict8 (update 2 "two" (update 3 "three" (update 1 "one"
+          (update 4 "four" (create-dictionary :compare #'numcompare))))))
+        (dict9 (update "three" 3 (update "four" 4 (update "two" 2
+          (update "one" 1 (create-dictionary :compare #'strcompare)))))))
+    (assert-true (samekeys dict2 dict3))
+    (assert-true (samekeys dict3 dict2))
+    (assert-true (samekeys dict5 dict6))
+    (assert-true (samekeys dict6 dict5))
+    (assert-true (samekeys dict7 dict8))
+    (assert-false (samekeys dict4 dict5))
+    (assert-false (samekeys dict5 dict4))
+    (assert-false (samekeys dict1 dict4))
+  )
 )
 
 (define-test with-keys
