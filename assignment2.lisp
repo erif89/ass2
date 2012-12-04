@@ -268,19 +268,30 @@
   
 (defun buildstack (node stack)
   (if node (buildstack (treenode-left node) (cons node stack)) stack)
+  )
 
 (defun samekeyshelper (node1 node2 cmp stack1 stack2)
   (cond
+    ((or (null (car stack1)) (null (car stack2))) nil)
+    ;((and (null (cdr stack1)) (null (cdr stack2)) (if (eq (funcall cmp (car stack1) (car stack2))) 'T nil)))
     ((and (null (cdr stack1)) (null (cdr stack2))) 'T)
     
-    ((null (cdr stack2)) (samekeyshelper node1 node2 cmp stack1 (buildstack (treenode-right (car stack2)) nil)))
-    ((null (cdr stack1)) (samekeyshelper node1 node2 cmp (buildstack (treenode-right (car stack1)) nil) stack2))
+    ((null (cdr stack2)) 
+      (if (car stack2) (samekeyshelper node1 node2 cmp (cdr stack1) (buildstack (treenode-right (car stack2)) nil)) nil))
+    ((null (cdr stack1)) 
+      (if (car stack1) (samekeyshelper node1 node2 cmp (buildstack (treenode-right (car stack1))nil) (cdr stack2)) nil))
     
-    ((eq (funcall cmp (car stack1) (car stack2)) 'T) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
-    ((eq (funcall cmp (car stack1) (car stack2)) 'GT) (samekeyshelper node1 node2 cmp 
+    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'T) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
+    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'GT) (samekeyshelper node1 node2 cmp 
                                                       (buildstack (treenode-right(treenode-left (car stack1))) stack1) stack2))
-    ((eq (funcall cmp (car stack1) (car stack2)) 'LT) (samekeyshelper node1 node2 cmp 
+    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'LT) (samekeyshelper node1 node2 cmp 
                                                       stack1 (buildstack (treenode-right(treenode-left (car stack2))) stack2)))
+                                                      
+    
+    
+    
+    
+    
     ;((eq (funcall cmp (car stack1) (car stack2)) 'LT) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
     ))
 ;;
@@ -570,6 +581,7 @@
   )
 )
 
+
 (define-test samekeys
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 "one" (update 2 "two"
@@ -582,12 +594,15 @@
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
         (dict6 (update 1 "two" (update 3 "three" (update 2 "four"
           (update 4 "one" (create-dictionary :compare #'numcompare))))))
-        (dict7 (update 1 "two" (update 3 "three" (update 2 "four"
-          (update 4 "one" (create-dictionary :compare #'numcompare)))))))
+        (dict7 (update 42 "indeed"(update 13 "yup"(update 9 "nine"(update 1 "two" (update 3 "three" (update 2 "four"
+          (update 4 "one" (create-dictionary :compare #'numcompare)))))))))
+        (dict8 (update 4 "indeed"(update 1 "yup"(update 9 "nine"(update 13 "two" (update 3 "three" (update 2 "four"
+          (update 42 "one" (create-dictionary :compare #'numcompare))))))))))
     (assert-true (samekeys dict2 dict3))
     (assert-true (samekeys dict3 dict2))
     (assert-true (samekeys dict5 dict6))
     (assert-true (samekeys dict6 dict5))
+    (assert-true (samekeys dict8 dict7))
     (assert-false (samekeys dict4 dict5))
     (assert-false (samekeys dict5 dict4))
   )
