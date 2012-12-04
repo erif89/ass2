@@ -268,11 +268,12 @@
       (let ((key1 (treenode-key node1))
            (key2 (treenode-key node2)))
         (cond
-          ((eq (funcall cmp key1 key2) 'LT) (samekeyshelper node1 (treenode-left node2) cmp))
-          ((eq (funcall cmp key1 key2) 'GT) (samekeyshelper (treenode-left node1) node2 cmp))
+          ((eq (funcall cmp key1 key2) 'LT) (and (samekeyshelper node1 (treenode-left node2) cmp)
+                                                 (samekeyshelper (treenode-right node1) node2 cmp)))
+          ((eq (funcall cmp key1 key2) 'GT) (and (samekeyshelper (treenode-left node1) node2 cmp)
+                                                 (samekeyshelper node1 (treenode-right node2) cmp)))
           ((eq (funcall cmp key1 key2) 'T)  
-            (if (and(eq (samekeyshelper (treenode-left node1) (treenode-left node2) cmp) 'T)
-                 (eq (samekeyshelper (treenode-left node1) (treenode-left node2) cmp) 'T)) 'T nil))
+            (if (eq (samekeyshelper (treenode-left node1) (treenode-left node2) cmp) 'T) 'T nil))
           )))))
           
 
@@ -503,7 +504,7 @@
   (let ((dict (create-dictionary :compare #'numcompare))
         (dict2 (update 1 "one" (update 2 "two"
           (create-dictionary :compare #'numcompare))))
-        (dict3 (update 1 "two" (update 2 "one"
+        (dict3 (update 2 "two" (update 1 "one"
           (create-dictionary :compare #'numcompare))))
         (dict4 (update 3 "three" (update 2 "two" (update 1 "one"
           (create-dictionary :compare #'numcompare)))))
@@ -511,20 +512,14 @@
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
         (dict6 (update 1 "two" (update 3 "three" (update 2 "four"
           (update 4 "one" (create-dictionary :compare #'numcompare))))))
-        (dict7 (update 3 "three" (update 1 "one" (update 2 "four"
-          (update 4 "one" (create-dictionary :compare #'numcompare))))))
-        (dict8 (update 2 "two" (update 3 "three" (update 1 "one"
-          (update 4 "four" (create-dictionary :compare #'numcompare))))))
-        (dict9 (update "three" 3 (update "four" 4 (update "two" 2
-          (update "one" 1 (create-dictionary :compare #'strcompare)))))))
+        (dict7 (update 1 "two" (update 3 "three" (update 2 "four"
+          (update 4 "one" (create-dictionary :compare #'numcompare)))))))
     (assert-true (samekeys dict2 dict3))
     (assert-true (samekeys dict3 dict2))
     (assert-true (samekeys dict5 dict6))
     (assert-true (samekeys dict6 dict5))
-    (assert-true (samekeys dict7 dict8))
     (assert-false (samekeys dict4 dict5))
     (assert-false (samekeys dict5 dict4))
-    (assert-false (samekeys dict1 dict4))
   )
 )
 
