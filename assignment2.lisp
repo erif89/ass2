@@ -181,10 +181,10 @@
       ((not (or left right)) node) ; leaf
       ((not left) ; right skewed
         (rotate (make-treenode :key key :value value :size size
-          :right (rebalancehelper right)) nil))
+          :right (rebalancehelper right)) t))
       ((not right) ; left skewed
         (rotate (make-treenode :key key :value value :size size
-          :left (rebalancehelper left)) t))
+          :left (rebalancehelper left)) nil))
       ((< (abs (- (treenode-size left) (treenode-size right))) 2) ; balanced
         (make-treenode :key key :value value :size size
           :left (rebalancehelper left) :right (rebalancehelper right)))
@@ -198,25 +198,24 @@
 ;; Precondition: right child is not nil if rotate-left, and vice versa.
 ;;
 (defun rotate (node rotate-left)
-  (let ((key (treenode-key node))
-        (value (treenode-value node))
-        (size (treenode-size node))
-        (left (if rotate-left
+  (let ((left (if rotate-left
                   (treenode-left node)
                   (treenode-right node)))
         (right (if rotate-left
                   (treenode-right node)
                   (treenode-left node))))
-    (let ((rkey (treenode-key right))
-          (rvalue (treenode-value right))
-          (rsize (treenode-size right))
-          (lsize (if left (treenode-size left) 0))
+    (let ((lsize (if left (treenode-size left) 0))
           (rleft (treenode-left right))
           (rright (treenode-right right)))
-      (let ((newvalue (make-treenode :key key :value value
+      (let ((newvalue (make-treenode
+              :key (treenode-key node)
+              :value (treenode-value node)
               :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
               :left left :right rleft)))
-        (make-treenode :key rkey :value rvalue :size (+
+        (make-treenode
+          :key (treenode-key right)
+          :value (treenode-value right)
+          :size (+
             (+ lsize (if rleft (treenode-size rleft) 0))
             (+ (if rright (treenode-size rright) 0) 2))
           :left (if rotate-left newvalue rright)
@@ -468,7 +467,17 @@
 )
 
 (define-test rebalance
-  (assert-true nil)
+  (let ((dict (update 3 "three" (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare)))))
+        (dict2 (update 3 "three" (update 1 "one" (update 2 "two"
+          (create-dictionary :compare #'numcompare)))))
+        (dict3 (update 4 "four" (update 3 "three" (update 2 "two"
+          (update 1 "one" (create-dictionary :compare #'numcompare))))))
+        (dict4 (update 4 "four" (update 3 "three" (update 1 "one"
+          (update 2 "two" (create-dictionary :compare #'numcompare)))))))
+    (assert-equal (write-to-string dict2) (write-to-string (rebalance dict)))
+    (assert-equal (write-to-string dict4) (write-to-string (rebalance dict3)))
+  )
 )
 
 (define-test rotate
