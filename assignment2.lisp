@@ -474,15 +474,39 @@
         (dict3 (update 4 "four" (update 3 "three" (update 2 "two"
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
         (dict4 (update 2 "two" (update 4 "four" (update 1 "one"
-          (update 3 "three" (create-dictionary :compare #'numcompare)))))))
+          (update 3 "three" (create-dictionary :compare #'numcompare))))))
+        (dict5 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left (make-treenode :key 2 :value 2 :size 3
+            :left nil
+            :right (make-treenode :key 3 :value 3 :size 2
+              :left (make-treenode :key 1 :value 1 :size 1)
+              :right nil))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left nil
+            :right (make-treenode :key 6 :value 6 :size 1)))))
+        (dict6 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left (make-treenode :key 2 :value 2 :size 3
+            :left (make-treenode :key 1 :value 1 :size 1)
+            :right (make-treenode :key 3 :value 3 :size 1))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left nil
+            :right (make-treenode :key 6 :value 6 :size 1))))))
     (assert-equal 1 (treenode-key (treedict-tree dict)))
     (assert-equal 2 (treenode-key (treedict-tree (rebalance dict))))
     (assert-equal 2 (treenode-key (treedict-tree (rebalance dict2))))
     (assert-equal 1 (treenode-key (treedict-tree dict3)))
     (assert-equal 3 (treenode-key (treedict-tree (rebalance dict3))))
+    (assert-false (equal (write-to-string dict2) (write-to-string dict)))
     (assert-equal (write-to-string dict2) (write-to-string (rebalance dict)))
+    (assert-true (equal (write-to-string dict2) (write-to-string (rebalance dict))))
+    (assert-false (equal (write-to-string dict2) (write-to-string dict)))
     (assert-equal (write-to-string dict2) (write-to-string (rebalance dict2)))
     (assert-equal (write-to-string dict4) (write-to-string (rebalance dict3)))
+    (assert-equal (write-to-string dict4) (write-to-string (rebalance dict4)))
+    (assert-equal (write-to-string dict6) (write-to-string (rebalance dict5)))
+    (assert-equal (write-to-string dict6) (write-to-string (rebalance dict6)))
   )
 )
 
