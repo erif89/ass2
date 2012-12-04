@@ -180,17 +180,20 @@
     (cond
       ((or (not (or left right)) (< size 3)) node) ; leaf
       ((not left) ; right skewed
-        (rotate (make-treenode :key key :value value :size size
-          :right (rebalancehelper right)) t))
+        (rebalancehelper (rotate (make-treenode :key key :value value :size size
+          :right (rebalancehelper right)) t)))
       ((not right) ; left skewed
-        (rotate (make-treenode :key key :value value :size size
-          :left (rebalancehelper left)) nil))
-      ((< (abs (- (treenode-size left) (treenode-size right))) 2) ; balanced
+        (rebalancehelper (rotate (make-treenode :key key :value value :size size
+          :left (rebalancehelper left)) nil)))
+      ((< (abs (- (log (treenode-size left) 2)
+                  (log (treenode-size right) 2)))
+           2) ; balanced
         (make-treenode :key key :value value :size size
           :left (rebalancehelper left) :right (rebalancehelper right)))
-      (t (rotate (make-treenode :key key :value value :size size
-                  :left (rebalancehelper left) :right (rebalancehelper right))
-          (< (treenode-size right) (treenode-size left))))))) ; skewed
+      (t (rebalancehelper (rotate
+            (make-treenode :key key :value value :size size
+              :left (rebalancehelper left) :right (rebalancehelper right))
+          (< (treenode-size right) (treenode-size left)))))))) ; skewed
 
 ;;
 ;; Performs rotation of binary tree node.
@@ -505,6 +508,7 @@
     (assert-equal (write-to-string dict2) (write-to-string (rebalance dict2)))
     (assert-equal (write-to-string dict4) (write-to-string (rebalance dict3)))
     (assert-equal (write-to-string dict4) (write-to-string (rebalance dict4)))
+    (assert-equal (write-to-string dict6) (write-to-string (rebalance (rebalance dict5))))
     (assert-equal (write-to-string dict6) (write-to-string (rebalance dict5)))
     (assert-equal (write-to-string dict6) (write-to-string (rebalance dict6)))
   )
