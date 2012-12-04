@@ -253,22 +253,21 @@
 (defun samekeys (dict1 dict2)
   "Returns T if dict1 has the same keys as dict2, nil otherwise"
   (let ((root1 (treedict-tree dict1))
-       (root2 (treedict-tree dict2))
-       (size1 (treenode-size (treedict-tree dict1)))
-       (size2 (treenode-size (treedict-tree dict2)))
-       (cmp1   (treedict-cmp dict1))
-       (cmp2   (treedict-cmp dict2)))
+        (root2 (treedict-tree dict2))
+        (size1 (treenode-size (treedict-tree dict1)))
+        (size2 (treenode-size (treedict-tree dict2)))
+        (cmp1 (treedict-cmp dict1))
+        (cmp2 (treedict-cmp dict2)))
     (cond
-    ((and (eq cmp1 cmp2) (= size1 size2)) (null (samekeyshelper root1 root2 cmp1 (buildstack root1 nil) (buildstack root2 nil))))
-    ('T nil
-  ))))
+      ((and (eq cmp1 cmp2) (= size1 size2))
+        (samekeyshelper root1 root2 cmp1
+          (buildstack root1 nil)
+          (buildstack root2 nil)))
+      ('T nil))))
 
   
 (defun buildstack (node stack)
-  (cond
-  ((null node) stack)
-  ('T (buildstack (treenode-left node) (cons node stack)))
-  ))
+  (if node (buildstack (treenode-left node) (cons node stack)) stack)
 
 (defun samekeyshelper (node1 node2 cmp stack1 stack2)
   (cond
