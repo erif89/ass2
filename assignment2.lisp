@@ -475,6 +475,8 @@
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
         (dict4 (update 4 "four" (update 3 "three" (update 1 "one"
           (update 2 "two" (create-dictionary :compare #'numcompare)))))))
+    (assert-equal 1 (treenode-key (treedict-tree dict)))
+    (assert-equal 2 (treenode-key (treedict-tree (rebalance dict))))
     (assert-equal (write-to-string dict2) (write-to-string (rebalance dict)))
     (assert-equal (write-to-string dict4) (write-to-string (rebalance dict3)))
   )
