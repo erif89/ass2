@@ -252,14 +252,35 @@
        (cmp1   (treedict-cmp dict1))
        (cmp2   (treedict-cmp dict2)))
     (cond
-    ((and (eq cmp1 cmp2) (= size1 size2)) (samekeyshelper root1 root2 cmp1))
+    ((and (eq cmp1 cmp2) (= size1 size2)) (null (samekeyshelper root1 root2 cmp1 (buildstack root1 nil) (buildstack root2 nil))))
     ('T nil
   ))))
 
+  
+(defun buildstack (node stack)
+  (cond
+  ((null node) stack)
+  ('T (buildstack (treenode-left node) (cons node stack)))
+  ))
+
+(defun samekeyshelper (node1 node2 cmp stack1 stack2)
+  (cond
+    ((and (null (cdr stack1)) (null (cdr stack2))) 'T)
+    
+    ((null (cdr stack2)) (samekeyshelper node1 node2 cmp stack1 (buildstack (treenode-right (car stack2)) nil)))
+    ((null (cdr stack1)) (samekeyshelper node1 node2 cmp (buildstack (treenode-right (car stack1)) nil) stack2))
+    
+    ((eq (funcall cmp (car stack1) (car stack2)) 'T) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
+    ((eq (funcall cmp (car stack1) (car stack2)) 'GT) (samekeyshelper node1 node2 cmp 
+                                                      (buildstack (treenode-right(treenode-left (car stack1))) stack1) stack2))
+    ((eq (funcall cmp (car stack1) (car stack2)) 'LT) (samekeyshelper node1 node2 cmp 
+                                                      stack1 (buildstack (treenode-right(treenode-left (car stack2))) stack2)))
+    ;((eq (funcall cmp (car stack1) (car stack2)) 'LT) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
+    ))
 ;;
 ;; Help function for keys, recurse over the tree to build a list of all keys.
 ;;
-(defun samekeyshelper (node1 node2 cmp)
+(defun samekeyshelper_old (node1 node2 cmp dir)
   "Returns value associated with key in node subtree, or default/nil"
   (cond
     ((and (null node1) (null node2)) 'T)
@@ -268,12 +289,14 @@
       (let ((key1 (treenode-key node1))
            (key2 (treenode-key node2)))
         (cond
-          ((eq (funcall cmp key1 key2) 'LT) (and (samekeyshelper node1 (treenode-left node2) cmp)
-                                                 (samekeyshelper (treenode-right node1) node2 cmp)))
-          ((eq (funcall cmp key1 key2) 'GT) (and (samekeyshelper (treenode-left node1) node2 cmp)
-                                                 (samekeyshelper node1 (treenode-right node2) cmp)))
+          ((eq (funcall cmp key1 key2) 'LT) (and (samekeyshelper_old node1 (treenode-left node2) cmp 'LT)
+                                                 (samekeyshelper_old (treenode-right node1) node2 cmp 'GT)))
+          ((eq (funcall cmp key1 key2) 'GT) (and (samekeyshelper_old (treenode-left node1) node2 cmp 'LT)
+                                                 (samekeyshelper_old node1 (treenode-right node2) cmp 'GT)))
           ((eq (funcall cmp key1 key2) 'T)  
-            (if (eq (samekeyshelper (treenode-left node1) (treenode-left node2) cmp) 'T) 'T nil))
+            (if (eq dir 'LT)
+            (if (samekeyshelper_old (treenode-left node1) (treenode-left node2) cmp 'LT) 'T nil)
+            (if (samekeyshelper_old (treenode-right node1) (treenode-right node2) cmp 'GT) 'T nil)))
           )))))
           
 
