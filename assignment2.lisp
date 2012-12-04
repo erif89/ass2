@@ -178,7 +178,7 @@
         (left (treenode-left node))
         (right (treenode-right node)))
     (cond
-      ((not (or left right)) node) ; leaf
+      ((or (not (or left right)) (< size 3)) node) ; leaf
       ((not left) ; right skewed
         (rotate (make-treenode :key key :value value :size size
           :right (rebalancehelper right)) t))
@@ -473,11 +473,15 @@
           (create-dictionary :compare #'numcompare)))))
         (dict3 (update 4 "four" (update 3 "three" (update 2 "two"
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
-        (dict4 (update 4 "four" (update 3 "three" (update 1 "one"
-          (update 2 "two" (create-dictionary :compare #'numcompare)))))))
+        (dict4 (update 2 "two" (update 4 "four" (update 1 "one"
+          (update 3 "three" (create-dictionary :compare #'numcompare)))))))
     (assert-equal 1 (treenode-key (treedict-tree dict)))
     (assert-equal 2 (treenode-key (treedict-tree (rebalance dict))))
+    (assert-equal 2 (treenode-key (treedict-tree (rebalance dict2))))
+    (assert-equal 1 (treenode-key (treedict-tree dict3)))
+    (assert-equal 3 (treenode-key (treedict-tree (rebalance dict3))))
     (assert-equal (write-to-string dict2) (write-to-string (rebalance dict)))
+    (assert-equal (write-to-string dict2) (write-to-string (rebalance dict2)))
     (assert-equal (write-to-string dict4) (write-to-string (rebalance dict3)))
   )
 )
