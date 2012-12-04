@@ -178,19 +178,22 @@
         (left (treenode-left node))
         (right (treenode-right node)))
     (cond
-      ((not (or left right)) node) ; leaf
+      ((or (not (or left right)) (< size 3)) node) ; leaf
       ((not left) ; right skewed
-        (rotate (make-treenode :key key :value value :size size
-          :right (rebalancehelper right)) nil))
+        (rebalancehelper (rotate (make-treenode :key key :value value :size size
+          :right (rebalancehelper right)) t)))
       ((not right) ; left skewed
-        (rotate (make-treenode :key key :value value :size size
-          :left (rebalancehelper left)) t))
-      ((< (abs (- (treenode-size left) (treenode-size right))) 2) ; balanced
+        (rebalancehelper (rotate (make-treenode :key key :value value :size size
+          :left (rebalancehelper left)) nil)))
+      ((< (abs (- (log (treenode-size left) 2)
+                  (log (treenode-size right) 2)))
+           2) ; balanced
         (make-treenode :key key :value value :size size
           :left (rebalancehelper left) :right (rebalancehelper right)))
-      (t (rotate (make-treenode :key key :value value :size size
-                  :left (rebalancehelper left) :right (rebalancehelper right))
-          (< (treenode-size right) (treenode-size left))))))) ; skewed
+      (t (rebalancehelper (rotate
+            (make-treenode :key key :value value :size size
+              :left (rebalancehelper left) :right (rebalancehelper right))
+          (< (treenode-size right) (treenode-size left)))))))) ; skewed
 
 ;;
 ;; Performs rotation of binary tree node.
@@ -198,24 +201,28 @@
 ;; Precondition: right child is not nil if rotate-left, and vice versa.
 ;;
 (defun rotate (node rotate-left)
-  (let ((key (treenode-key node))
-        (value (treenode-value node))
-        (size (treenode-size node))
-        (left (if rotate-left (treenode-left node) (treenode-right node)))
-        (right (if rotate-left (treenode-right node) (treenode-left node))))
-    (let ((rkey (treenode-key right))
-          (rvalue (treenode-value right))
-          (rsize (treenode-size right))
-          (lsize (if left (treenode-size left) 0))
+  (let ((left (if rotate-left
+                  (treenode-left node)
+                  (treenode-right node)))
+        (right (if rotate-left
+                  (treenode-right node)
+                  (treenode-left node))))
+    (let ((lsize (if left (treenode-size left) 0))
           (rleft (treenode-left right))
           (rright (treenode-right right)))
-      (make-treenode :key rkey :value rvalue :size (+ 
-          (+ lsize (if rleft (treenode-size rleft) 0))
-          (+ (if rright (treenode-size rright) 0) 2))
-        :left (make-treenode :key key :value value
-          :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
-          :left left :right rleft)
-        :right rright))))
+      (let ((newvalue (make-treenode
+              :key (treenode-key node)
+              :value (treenode-value node)
+              :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
+              :left left :right rleft)))
+        (make-treenode
+          :key (treenode-key right)
+          :value (treenode-value right)
+          :size (+
+            (+ lsize (if rleft (treenode-size rleft) 0))
+            (+ (if rright (treenode-size rright) 0) 2))
+          :left (if rotate-left newvalue rright)
+          :right (if rotate-left rright newvalue))))))
 
 ;;
 ;; Returns the keys of the dictionary in a list.
@@ -486,7 +493,48 @@
 )
 
 (define-test rebalance
-  (assert-true nil)
+  (let ((dict (update 3 "three" (update 2 "two" (update 1 "one"
+          (create-dictionary :compare #'numcompare)))))
+        (dict2 (update 3 "three" (update 1 "one" (update 2 "two"
+          (create-dictionary :compare #'numcompare)))))
+        (dict3 (update 4 "four" (update 3 "three" (update 2 "two"
+          (update 1 "one" (create-dictionary :compare #'numcompare))))))
+        (dict4 (update 2 "two" (update 4 "four" (update 1 "one"
+          (update 3 "three" (create-dictionary :compare #'numcompare))))))
+        (dict5 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left (make-treenode :key 2 :value 2 :size 3
+            :left nil
+            :right (make-treenode :key 3 :value 3 :size 2
+              :left (make-treenode :key 1 :value 1 :size 1)
+              :right nil))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left nil
+            :right (make-treenode :key 6 :value 6 :size 1)))))
+        (dict6 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left (make-treenode :key 2 :value 2 :size 3
+            :left (make-treenode :key 1 :value 1 :size 1)
+            :right (make-treenode :key 3 :value 3 :size 1))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left nil
+            :right (make-treenode :key 6 :value 6 :size 1))))))
+    (assert-equal 1 (treenode-key (treedict-tree dict)))
+    (assert-equal 2 (treenode-key (treedict-tree (rebalance dict))))
+    (assert-equal 2 (treenode-key (treedict-tree (rebalance dict2))))
+    (assert-equal 1 (treenode-key (treedict-tree dict3)))
+    (assert-equal 3 (treenode-key (treedict-tree (rebalance dict3))))
+    (assert-false (equal (write-to-string dict2) (write-to-string dict)))
+    (assert-equal (write-to-string dict2) (write-to-string (rebalance dict)))
+    (assert-true (equal (write-to-string dict2) (write-to-string (rebalance dict))))
+    (assert-false (equal (write-to-string dict2) (write-to-string dict)))
+    (assert-equal (write-to-string dict2) (write-to-string (rebalance dict2)))
+    (assert-equal (write-to-string dict4) (write-to-string (rebalance dict3)))
+    (assert-equal (write-to-string dict4) (write-to-string (rebalance dict4)))
+    (assert-equal (write-to-string dict6) (write-to-string (rebalance (rebalance dict5))))
+    (assert-equal (write-to-string dict6) (write-to-string (rebalance dict5)))
+    (assert-equal (write-to-string dict6) (write-to-string (rebalance dict6)))
+  )
 )
 
 (define-test rotate
