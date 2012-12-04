@@ -201,21 +201,26 @@
   (let ((key (treenode-key node))
         (value (treenode-value node))
         (size (treenode-size node))
-        (left (if rotate-left (treenode-left node) (treenode-right node)))
-        (right (if rotate-left (treenode-right node) (treenode-left node))))
+        (left (if rotate-left
+                  (treenode-left node)
+                  (treenode-right node)))
+        (right (if rotate-left
+                  (treenode-right node)
+                  (treenode-left node))))
     (let ((rkey (treenode-key right))
           (rvalue (treenode-value right))
           (rsize (treenode-size right))
           (lsize (if left (treenode-size left) 0))
           (rleft (treenode-left right))
           (rright (treenode-right right)))
-      (make-treenode :key rkey :value rvalue :size (+ 
-          (+ lsize (if rleft (treenode-size rleft) 0))
-          (+ (if rright (treenode-size rright) 0) 2))
-        :left (make-treenode :key key :value value
-          :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
-          :left left :right rleft)
-        :right rright))))
+      (let ((newvalue (make-treenode :key key :value value
+              :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
+              :left left :right rleft)))
+        (make-treenode :key rkey :value rvalue :size (+
+            (+ lsize (if rleft (treenode-size rleft) 0))
+            (+ (if rright (treenode-size rright) 0) 2))
+          :left (if rotate-left newvalue rright)
+          :right (if rotate-left rright newvalue))))))
 
 ;;
 ;; Returns the keys of the dictionary in a list.
