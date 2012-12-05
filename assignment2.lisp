@@ -286,19 +286,18 @@
     (if (null (treenode-right (car stack))) (cdr stack)
       (buildstack (treenode-right (car stack)) (cdr stack)))))
 
-    
 ;;
 ;; Help function for samekeys, compares keys using inorder walks.
 ;;
 (defun samekeyshelper (cmp stack1 stack2)
-  (if (or (and (null (car stack1)) (car stack2)) 
-          (and (car stack1) (null (car stack2)))) nil
-    (if (and (null (car stack1)) (null (car stack2))  ) 'T
-      (let ((cmp-res (funcall cmp (treenode-key(car stack1))
-                                  (treenode-key(car stack2)))))
-        (if (eq cmp-res 'T) (samekeyshelper cmp (popnode stack1) (popnode stack2))
-          nil
-        )))))
+  "Returns 'T if nodes and right subtrees in stacks have same keys, else nil"
+  (let ((empty1 (null (car stack1)))
+        (empty2 (null (car stack2))))
+  (unless (or (and empty1 (car stack2)) (and (car stack1) empty2))
+    (or (and empty1 empty2)
+        (and (eq (funcall cmp (treenode-key(car stack1))
+                              (treenode-key(car stack2))) 'T)
+             (samekeyshelper cmp (popnode stack1) (popnode stack2)))))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
