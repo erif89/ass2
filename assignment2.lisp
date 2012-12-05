@@ -278,11 +278,16 @@
                                 (treenode-key(car stack2)))))
       (cond
         ((and (null (cdr stack1)) (null (cdr stack2)))
-          (or (eq cmp-res 'T)
+          (or (and cmp-res
+                   (or (and (null (treenode-right (car stack1)))
+                            (null (treenode-right (car stack2))))
+                       (samekeyshelper cmp
+                         (buildstack (treenode-right (car stack1)) nil)
+                         (buildstack (treenode-right (car stack2)) nil))))
               (or (samekeyshelper cmp (buildstack
-                    (treenode-right (car stack1)) nil) stack2))
+                    (treenode-right (car stack1)) nil) stack2)
                   (samekeyshelper cmp stack1 (buildstack
-                    (treenode-right (car stack2)) nil))))
+                    (treenode-right (car stack2)) nil)))))
         ((null (cdr stack2)) 
           (samekeyshelper cmp (cdr stack1) (buildstack
             (treenode-right (car stack2)) nil)))
