@@ -237,12 +237,12 @@
 ;;
 (defun keyshelper (node acc)
   "Returns value associated with key in node subtree, or default/nil"
-  (cond
-    ((null node) acc)
-    ('T (let ((key (treenode-key node))
-              (left (treenode-left node))
-              (right (treenode-right node)))
-          (cons key  (keyshelper left (keyshelper right acc)))))))
+  (if (null node) acc
+      (let ((key (treenode-key node))
+            (left (treenode-left node))
+            (right (treenode-right node)))
+        (cons key  (keyshelper left (keyshelper right acc))))))
+
 ;;
 ;; Determines if dict1 and dict2 contain the same set of keys.
 ;; Care has been taken to make it efficient, i.e., no unnecessary large
