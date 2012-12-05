@@ -279,7 +279,8 @@
   "Returns 'T if inorder walk of stack1 is same as that of stack2, else nil"
   (cond
     ((or (null (car stack1)) (null (car stack2))) nil)
-    ((and (null (cdr stack1)) (null (cdr stack2))) 'T)
+    ((and (null (cdr stack1)) (null (cdr stack2)))
+      (if (eq (funcall cmp (treenode-key (car stack1)) (treenode-key (car stack2))) 'T) 'T nil))
     ((null (cdr stack2)) 
       (if (car stack2)
           (samekeyshelper cmp (cdr stack1)
@@ -582,12 +583,20 @@
         (dict7 (update 42 "indeed"(update 13 "yup"(update 9 "nine"(update 1 "two" (update 3 "three" (update 2 "four"
           (update 4 "one" (create-dictionary :compare #'numcompare)))))))))
         (dict8 (update 4 "indeed"(update 1 "yup"(update 9 "nine"(update 13 "two" (update 3 "three" (update 2 "four"
-          (update 42 "one" (create-dictionary :compare #'numcompare))))))))))
+          (update 42 "one" (create-dictionary :compare #'numcompare)))))))))
+        (dict9 (update 4 "indeed"(update 41 "yup"(update 9 "nine"(update 13 "two" (update 3 "three" (update 2 "four"
+          (update 1 "one" (create-dictionary :compare #'numcompare))))))))))
+    ;(assert-true (samekeys dict dict))
     (assert-true (samekeys dict2 dict3))
     (assert-true (samekeys dict3 dict2))
     (assert-true (samekeys dict5 dict6))
     (assert-true (samekeys dict6 dict5))
     (assert-true (samekeys dict8 dict7))
+    (assert-true (samekeys dict7 dict8))
+    (assert-true (samekeys dict9 dict9))
+    (assert-false (samekeys dict7 dict9))
+    (assert-false (samekeys dict8 dict9))
+    (assert-false (samekeys dict9 dict7))
     (assert-false (samekeys dict4 dict5))
     (assert-false (samekeys dict5 dict4))
   )
