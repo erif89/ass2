@@ -275,33 +275,30 @@
   "Returns 'T if inorder walk of stack1 is same as that of stack2, else nil"
   (unless (or (null (car stack1)) (null (car stack2)))
     (let ((cmp-res (funcall cmp (treenode-key(car stack1))
-                                (treenode-key(car stack2)))))
+                                (treenode-key(car stack2))))
+          (right1 (treenode-right (car stack1)))
+          (right2 (treenode-right (car stack2))))
       (cond
         ((and (null (cdr stack1)) (null (cdr stack2)))
           (or (and cmp-res
-                   (or (and (null (treenode-right (car stack1)))
-                            (null (treenode-right (car stack2))))
+                   (or (and (null right1) (null right2))
                        (samekeyshelper cmp
-                         (buildstack (treenode-right (car stack1)) nil)
-                         (buildstack (treenode-right (car stack2)) nil))))
-              (or (samekeyshelper cmp (buildstack
-                    (treenode-right (car stack1)) nil) stack2)
-                  (samekeyshelper cmp stack1 (buildstack
-                    (treenode-right (car stack2)) nil)))))
+                         (buildstack right1 nil)
+                         (buildstack right2 nil))))
+              (or (samekeyshelper cmp (buildstack right1 nil) stack2)
+                  (samekeyshelper cmp stack1 (buildstack right2 nil)))))
         ((null (cdr stack2)) 
-          (samekeyshelper cmp (cdr stack1) (buildstack
-            (treenode-right (car stack2)) nil)))
+          (samekeyshelper cmp (cdr stack1) (buildstack right2 nil)))
         ((null (cdr stack1))
-          (samekeyshelper cmp (buildstack
-            (treenode-right (car stack1)) nil) (cdr stack2)))
+          (samekeyshelper cmp (buildstack right1 nil) (cdr stack2)))
         ((eq cmp-res 'T)
           (samekeyshelper cmp (cdr stack1) (cdr stack2)))
         ((eq cmp-res 'GT)
           (samekeyshelper cmp (buildstack
-            (treenode-right(treenode-left (car stack1))) stack1) stack2))
+            (treenode-right (treenode-left (car stack1))) stack1) stack2))
         ((eq cmp-res 'LT)
           (samekeyshelper cmp stack1 (buildstack
-            (treenode-right(treenode-left (car stack2))) stack2)))))))
+            (treenode-right (treenode-left (car stack2))) stack2)))))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
