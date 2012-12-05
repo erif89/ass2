@@ -605,7 +605,33 @@
               :left (make-treenode :key 1 :value 1 :size 1)
               :right nil)
             :right (make-treenode :key 4 :value 4 :size 1))
-          :right (make-treenode :key 6 :value 6 :size 1)))))
+          :right (make-treenode :key 6 :value 6 :size 1))))
+        (dict12 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 5 :value 5 :size 6
+          :left  (make-treenode :key 4 :value 4 :size 4
+            :left  (make-treenode :key 3 :value 3 :size 3
+              :left  (make-treenode :key 2 :value 2 :size 2
+                :left (make-treenode :key 1 :value 1 :size 1)
+                :right nil)
+              :right nil)
+            :right nil)
+          :right (make-treenode :key 6 :value 6 :size 1))))
+        (dict13 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 6 :value 6 :size 6
+          :left (make-treenode :key 4 :value 4 :size 5
+            :left (make-treenode :key 2 :value 2 :size 2
+              :left (make-treenode :key 1 :value 1 :size 1)
+              :right (make-treenode :key 3 :value 3 :size 1))
+            :right (make-treenode :key 5 :value 5 :size 1))
+          :right nil)))
+        (dict14 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 2 :value 2 :size 6
+          :left (make-treenode :key 1 :value 1 :size 1)
+          :right (make-treenode :key 4 :value 4 :size 4
+            :left (make-treenode :key 3 :value 3 :size 2)
+            :right (make-treenode :key 5 :value 5 :size 2
+              :left nil
+              :right (make-treenode :key 6 :value 6 :size 1)))))))
     (assert-true (samekeys dict dict))
     (assert-false (samekeys dict dict2))
     (assert-false (samekeys dict2 dict))
@@ -616,7 +642,17 @@
     (assert-true (samekeys dict8 dict7))
     (assert-true (samekeys dict7 dict8))
     (assert-true (samekeys dict9 dict9))
+    (assert-true (samekeys dict10 dict10))
     (assert-true (samekeys dict10 dict11))
+    (assert-true (samekeys dict10 dict12))
+    (assert-true (samekeys dict10 dict13))
+    (assert-true (samekeys dict10 dict14))
+    (assert-true (samekeys dict11 dict12))
+    (assert-true (samekeys dict11 dict13))
+    (assert-true (samekeys dict12 dict11))
+    (assert-true (samekeys dict13 dict12))
+    (assert-true (samekeys dict14 dict11))
+    (assert-true (samekeys dict13 dict14))
     (assert-false (samekeys dict7 dict9))
     (assert-false (samekeys dict8 dict9))
     (assert-false (samekeys dict9 dict7))
