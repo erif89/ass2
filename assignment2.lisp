@@ -587,21 +587,21 @@
           (update 1 "one" (create-dictionary :compare #'numcompare)))))))))
         (dict10 (make-treedict :cmp #'numcompare :tree (make-treenode
           :key 4 :value 4 :size 6
-          :left (make-treenode :key 2 :value 2 :size 3
-            :left nil
+          :left  (make-treenode :key 2 :value 2 :size 3
+            :left  nil
             :right (make-treenode :key 3 :value 3 :size 2
-              :left (make-treenode :key 1 :value 1 :size 1)
+              :left  (make-treenode :key 1 :value 1 :size 1)
               :right nil))
           :right (make-treenode :key 5 :value 5 :size 2
-            :left nil
+            :left  nil
             :right (make-treenode :key 6 :value 6 :size 1)))))
         (dict11 (make-treedict :cmp #'numcompare :tree (make-treenode
           :key 4 :value 4 :size 6
-          :left (make-treenode :key 2 :value 2 :size 3
-            :left (make-treenode :key 1 :value 1 :size 1)
+          :left  (make-treenode :key 2 :value 2 :size 3
+            :left  (make-treenode :key 1 :value 1 :size 1)
             :right (make-treenode :key 3 :value 3 :size 1))
           :right (make-treenode :key 5 :value 5 :size 2
-            :left nil
+            :left  nil
             :right (make-treenode :key 6 :value 6 :size 1))))))
     (assert-true (samekeys dict dict))
     (assert-false (samekeys dict dict2))
