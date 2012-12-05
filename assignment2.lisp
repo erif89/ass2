@@ -273,9 +273,10 @@
   (if node (buildstack (treenode-left node) (cons node stack)) stack))
 
 ;;
-;; Help function for samekeys, recurse over the tree to build list of all keys.
+;; Help function for samekeys, compares keys using inorder walks.
 ;;
 (defun samekeyshelper (cmp stack1 stack2)
+  "Returns 'T if inorder walk of stack1 is same as that of stack2, else nil"
   (cond
     ((or (null (car stack1)) (null (car stack2))) nil)
     ((and (null (cdr stack1)) (null (cdr stack2))) 'T)
@@ -287,11 +288,10 @@
     ((null (cdr stack1))
       (if (car stack1)
           (samekeyshelper cmp
-            (buildstack (treenode-right (car stack1))nil) (cdr stack2))
+            (buildstack (treenode-right (car stack1)) nil) (cdr stack2))
           nil))
-    ('T (let ((cmp-res (funcall cmp
-                                (treenode-key(car stack1))
-                                (treenode-key(car stack2)))))
+    ('T (let ((cmp-res (funcall cmp (treenode-key(car stack1))
+                                    (treenode-key(car stack2)))))
           (cond
             ((eq cmp-res 'T)
               (samekeyshelper cmp (cdr stack1) (cdr stack2)))
