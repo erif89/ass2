@@ -576,13 +576,36 @@
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
         (dict6 (update 1 "two" (update 3 "three" (update 2 "four"
           (update 4 "one" (create-dictionary :compare #'numcompare))))))
-        (dict7 (update 42 "indeed"(update 13 "yup"(update 9 "nine"(update 1 "two" (update 3 "three" (update 2 "four"
+        (dict7 (update 42 "indeed" (update 13 "yup" (update 9 "nine"
+          (update 1 "two" (update 3 "three" (update 2 "four"
           (update 4 "one" (create-dictionary :compare #'numcompare)))))))))
-        (dict8 (update 4 "indeed"(update 1 "yup"(update 9 "nine"(update 13 "two" (update 3 "three" (update 2 "four"
+        (dict8 (update 4 "indeed" (update 1 "yup" (update 9 "nine"
+          (update 13 "two" (update 3 "three" (update 2 "four"
           (update 42 "one" (create-dictionary :compare #'numcompare)))))))))
-        (dict9 (update 4 "indeed"(update 41 "yup"(update 9 "nine"(update 13 "two" (update 3 "three" (update 2 "four"
-          (update 1 "one" (create-dictionary :compare #'numcompare))))))))))
+        (dict9 (update 4 "indeed" (update 41 "yup" (update 9 "nine"
+          (update 13 "two" (update 3 "three" (update 2 "four"
+          (update 1 "one" (create-dictionary :compare #'numcompare)))))))))
+        (dict10 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left (make-treenode :key 2 :value 2 :size 3
+            :left nil
+            :right (make-treenode :key 3 :value 3 :size 2
+              :left (make-treenode :key 1 :value 1 :size 1)
+              :right nil))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left nil
+            :right (make-treenode :key 6 :value 6 :size 1)))))
+        (dict11 (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left (make-treenode :key 2 :value 2 :size 3
+            :left (make-treenode :key 1 :value 1 :size 1)
+            :right (make-treenode :key 3 :value 3 :size 1))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left nil
+            :right (make-treenode :key 6 :value 6 :size 1))))))
     (assert-true (samekeys dict dict))
+    (assert-false (samekeys dict dict2))
+    (assert-false (samekeys dict2 dict))
     (assert-true (samekeys dict2 dict3))
     (assert-true (samekeys dict3 dict2))
     (assert-true (samekeys dict5 dict6))
@@ -590,6 +613,7 @@
     (assert-true (samekeys dict8 dict7))
     (assert-true (samekeys dict7 dict8))
     (assert-true (samekeys dict9 dict9))
+    (assert-true (samekeys dict10 dict11))
     (assert-false (samekeys dict7 dict9))
     (assert-false (samekeys dict8 dict9))
     (assert-false (samekeys dict9 dict7))
