@@ -272,19 +272,22 @@
                (buildstack root2 nil))))))
 
 ;;
-;; Used by samekeys and samekeyshelper to get path to leftmost leaf
+;; Used to get path to leftmost leaf of a treenode
 ;;
 (defun buildstack (node stack)
   "Returns stack appended with the leftmost children of node"
   (if node (buildstack (treenode-left node) (cons node stack)) stack))
   
 ;;
-;; used by samekeyshelper and returns a new stack
+;; Used by samekeyshelper, stack with its top element popped and possibly
+;; the leftmost children of the top's right subtree added.
 ;;
 (defun popnode (stack)
-  (if (null stack) nil
-    (if (null (treenode-right (car stack))) (cdr stack)
-      (buildstack (treenode-right (car stack)) (cdr stack)))))
+  "Returns stack with its top element popped and possibly new nodes added"
+  (when stack
+    (if (treenode-right (car stack))
+        (buildstack (treenode-right (car stack)) (cdr stack))
+        (cdr stack))))
 
 ;;
 ;; Help function for samekeys, compares keys using inorder walks.
