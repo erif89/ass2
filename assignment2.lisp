@@ -293,12 +293,16 @@
           (samekeyshelper cmp (buildstack right1 nil) (cdr stack2)))
         ((eq cmp-res 'T)
           (samekeyshelper cmp (cdr stack1) (cdr stack2)))
-        ((eq cmp-res 'GT)
-          (samekeyshelper cmp (buildstack
-            (treenode-right (treenode-left (car stack1))) stack1) stack2))
-        ((eq cmp-res 'LT)
-          (samekeyshelper cmp stack1 (buildstack
-            (treenode-right (treenode-left (car stack2))) stack2)))))))
+        ('T (let ((left1 (treenode-left (car stack1)))
+                  (left2 (treenode-left (car stack2))))
+              (cond
+                ((eq cmp-res 'GT)
+                 (when left1
+                   (samekeyshelper cmp (buildstack (treenode-right left1) stack1) stack2)))
+                ((eq cmp-res 'LT)
+                  (when left2
+                    (samekeyshelper cmp stack1 (buildstack (treenode-right left2) stack2))))
+                ('T nil))))))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
@@ -614,7 +618,7 @@
     (assert-true (samekeys dict8 dict7))
     (assert-true (samekeys dict7 dict8))
     (assert-true (samekeys dict9 dict9))
-    ;(assert-true (samekeys dict10 dict11))
+    (assert-true (samekeys dict10 dict11))
     (assert-false (samekeys dict7 dict9))
     (assert-false (samekeys dict8 dict9))
     (assert-false (samekeys dict9 dict7))
