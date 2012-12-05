@@ -2,6 +2,16 @@
 ;;; Authors:
 ;;; - Carl Carenvall <caca7037@student.uu.se>
 ;;; - Emil Wall <emwa3503@student.uu.se>
+;;;
+;;; To run, you need lisp-unit.lisp. Here's the procedure:
+;;; 1. (load "lisp-unit.lisp")
+;;; 2. (use-package :lisp-unit)
+;;; 3. (load "assignment2.lisp")
+;;; 4. (run-tests)
+;;;
+;;; Note that you need to restart the REPL if you accidently loaded
+;;; assignment2.lisp before step 1 or 2.
+;;;
 
 
 ;;
@@ -267,42 +277,28 @@
 (defun buildstack (node stack)
   "Returns stack appended with the leftmost children of node"
   (if node (buildstack (treenode-left node) (cons node stack)) stack))
+  
+;;
+;; used by samekeyshelper and returns a new stack
+;;
+(defun popnode (stack)
+  (if (null stack) nil
+    (if (null (treenode-right (car stack))) (cdr stack)
+      (buildstack (treenode-right (car stack)) (cdr stack)))))
 
+    
 ;;
 ;; Help function for samekeys, compares keys using inorder walks.
 ;;
 (defun samekeyshelper (cmp stack1 stack2)
-  "Returns 'T if inorder walk of stack1 is same as that of stack2, else nil"
-  (unless (or (null (car stack1)) (null (car stack2)))
-    (let ((cmp-res (funcall cmp (treenode-key(car stack1))
-                                (treenode-key(car stack2))))
-          (right1 (treenode-right (car stack1)))
-          (right2 (treenode-right (car stack2))))
-      (cond
-        ((and (null (cdr stack1)) (null (cdr stack2)))
-          (or (and (eq cmp-res 'T)
-                   (or (and (null right1) (null right2))
-                       (samekeyshelper cmp
-                         (buildstack right1 nil)
-                         (buildstack right2 nil))))
-              (or (samekeyshelper cmp (buildstack right1 nil) stack2)
-                  (samekeyshelper cmp stack1 (buildstack right2 nil)))))
-        ((null (cdr stack2)) 
-          (samekeyshelper cmp (cdr stack1) (buildstack right2 nil)))
-        ((null (cdr stack1))
-          (samekeyshelper cmp (buildstack right1 nil) (cdr stack2)))
-        ((eq cmp-res 'T)
-          (samekeyshelper cmp (cdr stack1) (cdr stack2)))
-        ('T (let ((left1 (treenode-left (car stack1)))
-                  (left2 (treenode-left (car stack2))))
-              (cond
-                ((eq cmp-res 'GT)
-                 (when left1
-                   (samekeyshelper cmp (buildstack (treenode-right left1) stack1) stack2)))
-                ((eq cmp-res 'LT)
-                  (when left2
-                    (samekeyshelper cmp stack1 (buildstack (treenode-right left2) stack2))))
-                ('T nil))))))))
+  (if (or (and (null (car stack1)) (car stack2)) 
+          (and (car stack1) (null (car stack2)))) nil
+    (if (and (null (car stack1)) (null (car stack2))  ) 'T
+      (let ((cmp-res (funcall cmp (treenode-key(car stack1))
+                                  (treenode-key(car stack2)))))
+        (if (eq cmp-res 'T) (samekeyshelper cmp (popnode stack1) (popnode stack2))
+          nil
+        )))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
