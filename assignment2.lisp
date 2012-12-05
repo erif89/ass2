@@ -260,7 +260,7 @@
         (cmp2 (treedict-cmp dict2)))
     (cond
       ((and (eq cmp1 cmp2) (= size1 size2))
-        (samekeyshelper root1 root2 cmp1
+        (samekeyshelper cmp1
           (buildstack root1 nil)
           (buildstack root2 nil)))
       ('T nil))))
@@ -275,27 +275,27 @@
 ;;
 ;; Help function for samekeys, recurse over the tree to build list of all keys.
 ;;
-(defun samekeyshelper (node1 node2 cmp stack1 stack2)
+(defun samekeyshelper (cmp stack1 stack2)
   (cond
     ((or (null (car stack1)) (null (car stack2))) nil)
     ((and (null (cdr stack1)) (null (cdr stack2))) 'T)
     ((null (cdr stack2)) 
       (if (car stack2)
-          (samekeyshelper node1 node2 cmp (cdr stack1)
+          (samekeyshelper cmp (cdr stack1)
             (buildstack (treenode-right (car stack2)) nil))
           nil))
     ((null (cdr stack1))
       (if (car stack1)
-          (samekeyshelper node1 node2 cmp
+          (samekeyshelper cmp
             (buildstack (treenode-right (car stack1))nil) (cdr stack2))
           nil))
     ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'T)
-      (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
+      (samekeyshelper cmp (cdr stack1) (cdr stack2)))
     ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'GT)
-      (samekeyshelper node1 node2 cmp (buildstack
+      (samekeyshelper cmp (buildstack
         (treenode-right(treenode-left (car stack1))) stack1) stack2))
     ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'LT)
-      (samekeyshelper node1 node2 cmp stack1 (buildstack
+      (samekeyshelper cmp stack1 (buildstack
         (treenode-right(treenode-left (car stack2))) stack2)))))
 
 ;;
