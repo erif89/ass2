@@ -289,14 +289,18 @@
           (samekeyshelper cmp
             (buildstack (treenode-right (car stack1))nil) (cdr stack2))
           nil))
-    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'T)
-      (samekeyshelper cmp (cdr stack1) (cdr stack2)))
-    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'GT)
-      (samekeyshelper cmp (buildstack
-        (treenode-right(treenode-left (car stack1))) stack1) stack2))
-    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'LT)
-      (samekeyshelper cmp stack1 (buildstack
-        (treenode-right(treenode-left (car stack2))) stack2)))))
+    ('T (let ((cmp-res (funcall cmp
+                                (treenode-key(car stack1))
+                                (treenode-key(car stack2)))))
+          (cond
+            ((eq cmp-res 'T)
+              (samekeyshelper cmp (cdr stack1) (cdr stack2)))
+            ((eq cmp-res 'GT)
+              (samekeyshelper cmp (buildstack
+                (treenode-right(treenode-left (car stack1))) stack1) stack2))
+            ((eq cmp-res 'LT)
+              (samekeyshelper cmp stack1 (buildstack
+                (treenode-right(treenode-left (car stack2))) stack2))))))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
