@@ -253,17 +253,14 @@
 (defun samekeys (dict1 dict2)
   "Returns T if dict1 has the same keys as dict2, nil otherwise"
   (let ((root1 (treedict-tree dict1))
-        (root2 (treedict-tree dict2))
-        (size1 (treenode-size (treedict-tree dict1)))
-        (size2 (treenode-size (treedict-tree dict2)))
-        (cmp1 (treedict-cmp dict1))
-        (cmp2 (treedict-cmp dict2)))
-    (cond
-      ((and (eq cmp1 cmp2) (= size1 size2))
-        (samekeyshelper cmp1
-          (buildstack root1 nil)
-          (buildstack root2 nil)))
-      ('T nil))))
+        (root2 (treedict-tree dict2)))
+    (if (or (null root1) (null root2))
+        (and (null root1) (null root2))
+        (and (and (eq (treedict-cmp dict1) (treedict-cmp dict2))
+                  (= (treenode-size root1) (treenode-size root2)))
+             (samekeyshelper (treedict-cmp dict1)
+               (buildstack root1 nil)
+               (buildstack root2 nil))))))
 
 ;;
 ;; Used by samekeys and samekeyshelper to get path to leftmost leaf
@@ -585,7 +582,7 @@
           (update 42 "one" (create-dictionary :compare #'numcompare)))))))))
         (dict9 (update 4 "indeed"(update 41 "yup"(update 9 "nine"(update 13 "two" (update 3 "three" (update 2 "four"
           (update 1 "one" (create-dictionary :compare #'numcompare))))))))))
-    ;(assert-true (samekeys dict dict))
+    (assert-true (samekeys dict dict))
     (assert-true (samekeys dict2 dict3))
     (assert-true (samekeys dict3 dict2))
     (assert-true (samekeys dict5 dict6))
