@@ -265,57 +265,38 @@
           (buildstack root2 nil)))
       ('T nil))))
 
-  
+;;
+;; Used by samekeys and samekeyshelper to get path to leftmost leaf
+;;
 (defun buildstack (node stack)
-  (if node (buildstack (treenode-left node) (cons node stack)) stack)
-  )
+  "Returns stack appended with the leftmost children of node"
+  (if node (buildstack (treenode-left node) (cons node stack)) stack))
 
+;;
+;; Help function for samekeys, recurse over the tree to build list of all keys.
+;;
 (defun samekeyshelper (node1 node2 cmp stack1 stack2)
   (cond
     ((or (null (car stack1)) (null (car stack2))) nil)
-    ;((and (null (cdr stack1)) (null (cdr stack2)) (if (eq (funcall cmp (car stack1) (car stack2))) 'T nil)))
     ((and (null (cdr stack1)) (null (cdr stack2))) 'T)
-    
     ((null (cdr stack2)) 
-      (if (car stack2) (samekeyshelper node1 node2 cmp (cdr stack1) (buildstack (treenode-right (car stack2)) nil)) nil))
-    ((null (cdr stack1)) 
-      (if (car stack1) (samekeyshelper node1 node2 cmp (buildstack (treenode-right (car stack1))nil) (cdr stack2)) nil))
-    
-    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'T) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
-    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'GT) (samekeyshelper node1 node2 cmp 
-                                                      (buildstack (treenode-right(treenode-left (car stack1))) stack1) stack2))
-    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'LT) (samekeyshelper node1 node2 cmp 
-                                                      stack1 (buildstack (treenode-right(treenode-left (car stack2))) stack2)))
-                                                      
-    
-    
-    
-    
-    
-    ;((eq (funcall cmp (car stack1) (car stack2)) 'LT) (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
-    ))
-;;
-;; Help function for keys, recurse over the tree to build a list of all keys.
-;;
-(defun samekeyshelper_old (node1 node2 cmp dir)
-  "Returns value associated with key in node subtree, or default/nil"
-  (cond
-    ((and (null node1) (null node2)) 'T)
-    ((or (null node1) (null node2)) nil)
-    ('T 
-      (let ((key1 (treenode-key node1))
-           (key2 (treenode-key node2)))
-        (cond
-          ((eq (funcall cmp key1 key2) 'LT) (and (samekeyshelper_old node1 (treenode-left node2) cmp 'LT)
-                                                 (samekeyshelper_old (treenode-right node1) node2 cmp 'GT)))
-          ((eq (funcall cmp key1 key2) 'GT) (and (samekeyshelper_old (treenode-left node1) node2 cmp 'LT)
-                                                 (samekeyshelper_old node1 (treenode-right node2) cmp 'GT)))
-          ((eq (funcall cmp key1 key2) 'T)  
-            (if (eq dir 'LT)
-            (if (samekeyshelper_old (treenode-left node1) (treenode-left node2) cmp 'LT) 'T nil)
-            (if (samekeyshelper_old (treenode-right node1) (treenode-right node2) cmp 'GT) 'T nil)))
-          )))))
-          
+      (if (car stack2)
+          (samekeyshelper node1 node2 cmp (cdr stack1)
+            (buildstack (treenode-right (car stack2)) nil))
+          nil))
+    ((null (cdr stack1))
+      (if (car stack1)
+          (samekeyshelper node1 node2 cmp
+            (buildstack (treenode-right (car stack1))nil) (cdr stack2))
+          nil))
+    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'T)
+      (samekeyshelper node1 node2 cmp (cdr stack1) (cdr stack2)))
+    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'GT)
+      (samekeyshelper node1 node2 cmp (buildstack
+        (treenode-right(treenode-left (car stack1))) stack1) stack2))
+    ((eq (funcall cmp (treenode-key(car stack1)) (treenode-key(car stack2))) 'LT)
+      (samekeyshelper node1 node2 cmp stack1 (buildstack
+        (treenode-right(treenode-left (car stack2))) stack2)))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
