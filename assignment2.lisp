@@ -323,9 +323,15 @@
 ;; and nil as variables.
 ;;
 (defmacro match-pattern (expr &rest patternlist)  ; TODO list arguments as (expr ((pattern_1 body_1) (pattern_2 body_2) .. (pattern_n body_n)))
+; Or is it a list such that a call looks like this: (match pattern '(1 2 a b) ('(1 2 b a) "no match") ('(1 2 a b) "match") )
+; which would print "match"
   "Returns result of evaluationg the first body with pattern matching expr"
-  nil)  ; TODO implement
+  (cons 'cond (loop for p in patternlist collect (progn `((equal ,expr ,(car p)) ,(cadr p)) )))
+  )
 
+
+(defmacro dowhen (condition &rest body)
+  `(if ,condition (progn ,@body)))
 
 ;;
 ;; Test functions
