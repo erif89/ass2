@@ -308,7 +308,7 @@
 ;;
 (defmacro with-keys ((key value dict) body)
   "Returns result of evaluating body on each key-value pair in dict"
-  nil)  ; TODO implement
+  )
 
 ;;
 ;; Evaluates expr and then tries to match the result against pattern_i.
@@ -326,12 +326,9 @@
 ; Or is it a list such that a call looks like this: (match pattern '(1 2 a b) ('(1 2 b a) "no match") ('(1 2 a b) "match") )
 ; which would print "match"
   "Returns result of evaluationg the first body with pattern matching expr"
-  (cons 'cond (loop for p in patternlist collect (progn `((equal ,expr ,(car p)) ,(cadr p)) )))
+  (cons 'cond (loop for p in patternlist collect (progn `((equal ,expr ,(car p)) ,(nconc (cadr p) (cons (car p) nil))) )))
   )
 
-
-(defmacro dowhen (condition &rest body)
-  `(if ,condition (progn ,@body)))
 
 ;;
 ;; Test functions
@@ -670,5 +667,13 @@
 )
 
 (define-test match-pattern
-  (assert-true nil)
+  (assert-equal 3 (match-pattern 2 
+                      (1 (+ 10)) 
+                      (2 (+ 1))))
+  (assert-equal '(1 2 3) (match-pattern '(2 3)
+                      ('(2 3) (cons 1))
+                      ('(42 13) (cons 100))))
+  (assert-equal '(1 2 3) (match-pattern '(2 3)
+                      ('(X 3) (cons 1))
+                      ('(42 13) (cons 100))))
 )
