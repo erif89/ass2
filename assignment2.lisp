@@ -308,7 +308,10 @@
 ;;
 (defmacro with-keys (dict body)
   "Returns result of evaluating body on each key-value pair in dict"
-  )
+  `(when (treedict-tree ,dict)
+      (let ((key (treenode-key (treedict-tree ,dict)))
+            (value (treenode-value (treedict-tree ,dict))))
+        ((lambda (key value) ,@body) key value))))
 
 ;;
 ;; Evaluates expr and then tries to match the result against pattern_i.
