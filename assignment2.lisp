@@ -322,7 +322,7 @@
 ;; quote can not be used as a variable. This is ok, as is disallowing t
 ;; and nil as variables.
 ;;
-(defmacro match-pattern (expr &rest patternlist)  ; TODO list arguments as (expr ((pattern_1 body_1) (pattern_2 body_2) .. (pattern_n body_n)))
+(defmacro match-pattern (expr &rest patternlist)
 ; Or is it a list such that a call looks like this: (match pattern '(1 2 a b) ('(1 2 b a) "no match") ('(1 2 a b) "match") )
 ; which would print "match"
   "Returns result of evaluationg the first body with pattern matching expr"
@@ -674,6 +674,26 @@
                       ('(2 3) (cons 1))
                       ('(42 13) (cons 100))))
   (assert-equal '(1 2 3) (match-pattern '(2 3)
+                      ('(X 3) (cons 1))
+                      ('(42 13) (cons 100))))
+  (assert-equal '(1 2 3) (match-pattern '(2 3)
+                      ('(X X) (cons 0))
+                      ('(X 3) (cons 1))
+                      ('(42 13) (cons 100))))
+  (assert-equal '(1 2 3) (match-pattern '(2 3)
+                      ('(X X) (cons 0))
+                      ('(2 X) (cons 1))
+                      ('(42 13) (cons 100))))
+  (assert-equal '(0 2 3) (match-pattern '(2 3)
+                      ('(X Y) (cons 0))
+                      ('(X 3) (cons 1))
+                      ('(42 13) (cons 100))))
+  (assert-equal '(0 2 2) (match-pattern '(2 2)
+                      ('(X X) (cons 0))
+                      ('(Y 3) (cons 1))
+                      ('(42 13) (cons 100))))
+  (assert-equal '(0 2 2) (match-pattern '(2 2)
+                      ('(X X) (cons 0))
                       ('(X 3) (cons 1))
                       ('(42 13) (cons 100))))
 )
