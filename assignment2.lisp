@@ -306,7 +306,7 @@
 ;; Evaluates body once for each key-value pair in dict. key and value are
 ;; bound to each key-value pair in dict.
 ;;
-(defmacro with-keys ((key value dict) body)
+(defmacro with-keys (dict body)
   "Returns result of evaluating body on each key-value pair in dict"
   )
 
@@ -663,7 +663,17 @@
 )
 
 (define-test with-keys
-  (assert-true nil)
+  (let ((dict (make-treedict :cmp #'numcompare :tree (make-treenode
+          :key 4 :value 4 :size 6
+          :left  (make-treenode :key 2 :value 2 :size 3
+            :left  (make-treenode :key 1 :value 1 :size 1)
+            :right (make-treenode :key 3 :value 3 :size 2))
+          :right (make-treenode :key 5 :value 5 :size 2
+            :left  nil
+            :right (make-treenode :key 6 :value 6 :size 1))))))
+    (assert-equal 42 (with-keys dict (+ key value))) ; 1+1+2+2+3+3+4+4+5+5+6+6
+    (assert-equal '(2 4 6 8 10 12) (with-keys dict (+ key value)))
+  )
 )
 
 (define-test match-pattern
