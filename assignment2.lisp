@@ -339,11 +339,6 @@
 (defun match (expr pattern)
   (cond
     ((equal expr pattern) t)
-    ((atom pattern) nil)
-    ((not (listp expr)) nil)
-    ((and (or (match (car expr) (car pattern))
-              (not (atom (car pattern))))
-          (match (cdr expr) (cdr pattern))) t)
     (t nil)))
 
 ;;
@@ -689,6 +684,10 @@
             :right (make-treenode :key 6 :value 6 :size 1))))))
     (assert-equal 42 (with-keys dict (+ key value))) ; 1+1+2+2+3+3+4+4+5+5+6+6
     (assert-equal '(2 4 6 8 10 12) (with-keys dict (+ key value)))
+    (labels ((my_comp (a b) (cond ((< a b) 'LT) ((= a b) 'EQ) (t 'GT))))
+      (let ((d (update 2 4 (update 1 2
+            (create-dictionary :compare #'my_comp)))))
+        (with-keys (k v d) (format t "~D~%" (+ k v)))))
   )
 )
 
@@ -722,4 +721,8 @@
                       ('(X X) (cons 0))
                       ('(X 3) (cons 1))
                       ('(42 13) (cons 100))))
+  (assert-equal '(:THREE (FOO BAR) FOO BAZ)
+    (match-pattern '((foo bar) foo baz)
+                   ('(car . car) `(:cons ,car ,car))
+                   ('(one two three) `(:three ,one ,two ,three))))
 )
