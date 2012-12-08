@@ -160,10 +160,7 @@
 ;;
 (defun rebalance (dict)
   "Returns dict with depth of each child differing with at most 1."
-  (let ((tree (treedict-tree dict)))
-    (if tree
-        (make-treedict :tree (rebalancehelper tree) :cmp (treedict-cmp dict))
-        dict)))
+  `(,@(rebalancehelper dict) ,(sixth dict)))
 
 ;;
 ;; Help function to rebalance. Returns node reordered to be "height-balanced".
@@ -173,28 +170,27 @@
 ;; height of the left tree is within 1 of the height of the right tree.
 ;;
 (defun rebalancehelper (node)
-  (let ((key (treenode-key node))
-        (value (treenode-value node))
-        (size (treenode-size node))
-        (left (treenode-left node))
-        (right (treenode-right node)))
+  (let ((key (first node))
+        (value (second node))
+        (left (third node))
+        (right (fourth node))
+        (size (fifth node)))
     (cond
       ((or (not (or left right)) (< size 3)) node) ; leaf
       ((not left) ; right skewed
-        (rebalancehelper (rotate (make-treenode :key key :value value :size size
-          :right (rebalancehelper right)) t)))
+        (rebalance (rotate (list key value
+          nil (rebalance right) size) t)))
       ((not right) ; left skewed
-        (rebalancehelper (rotate (make-treenode :key key :value value :size size
-          :left (rebalancehelper left)) nil)))
-      ((< (abs (- (log (treenode-size left) 2)
-                  (log (treenode-size right) 2)))
+        (rebalance (rotate (list key value
+          (rebalance left) nil size) nil)))
+      ((< (abs (- (log (fifth left) 2)
+                  (log (fifth right) 2)))
            2) ; balanced
-        (make-treenode :key key :value value :size size
-          :left (rebalancehelper left) :right (rebalancehelper right)))
-      (t (rebalancehelper (rotate
-            (make-treenode :key key :value value :size size
-              :left (rebalancehelper left) :right (rebalancehelper right))
-          (< (treenode-size right) (treenode-size left)))))))) ; skewed
+        (list key value (rebalance left) (rebalance right) size))
+      (t (rebalance
+          (rotate
+            (list key value (rebalance left) (rebalance right) size)
+            (< (fifth right) (fifth left)))))))) ; skewed
 
 ;;
 ;; Performs rotation of binary tree node.
