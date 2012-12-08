@@ -555,16 +555,16 @@
           (update 1 "one" (create-dictionary :compare #'numcompare))))))
         (dict4 (update 2 "two" (update 4 "four" (update 1 "one"
           (update 3 "three" (create-dictionary :compare #'numcompare))))))
-        (dict5 (make-treedict :cmp #'numcompare :tree (make-treenode
-          :key 4 :value 4 :size 6
-          :left (make-treenode :key 2 :value 2 :size 3
-            :left nil
-            :right (make-treenode :key 3 :value 3 :size 2
-              :left (make-treenode :key 1 :value 1 :size 1)
-              :right nil))
-          :right (make-treenode :key 5 :value 5 :size 2
-            :left nil
-            :right (make-treenode :key 6 :value 6 :size 1)))))
+        ; (dict5 (make-treedict :cmp #'numcompare :tree (make-treenode
+          ; :key 4 :value 4 :size 6
+          ; :left (make-treenode :key 2 :value 2 :size 3
+            ; :left nil
+            ; :right (make-treenode :key 3 :value 3 :size 2
+              ; :left (make-treenode :key 1 :value 1 :size 1)
+              ; :right nil))
+          ; :right (make-treenode :key 5 :value 5 :size 2
+            ; :left nil
+            ; :right (make-treenode :key 6 :value 6 :size 1)))))
         ; (dict6 (make-treedict :cmp #'numcompare :tree (make-treenode
           ; :key 4 :value 4 :size 6
           ; :left (make-treenode :key 2 :value 2 :size 3
@@ -595,12 +595,12 @@
 (define-test rotate
   (let ((dict (update "b" "b" (update "a" "a" (create-dictionary))))
         (dict2 (update "a" "a" (update "b" "b" (create-dictionary)))))
-  ; (assert-equal
-    ; (write-to-string (treedict-tree dict2))
-    ; (write-to-string (rotate (treedict-tree dict) t))) ;rotate left
-  ; (assert-equal
-    ; (write-to-string (treedict-tree dict))
-    ; (write-to-string (rotate (treedict-tree dict2) nil))) ; rotate right
+  (assert-equal
+    (write-to-string dict2)
+    (write-to-string `(,@(rotate dict t) ,#'strcompare))) ;rotate left
+  (assert-equal
+    (write-to-string dict)
+    (write-to-string `(,@(rotate dict2 nil) ,#'strcompare))) ; rotate right
   )
 )
 
