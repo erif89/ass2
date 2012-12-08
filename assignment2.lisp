@@ -21,12 +21,12 @@
 ;; in the root node. The cmp function is used for node key comparison and
 ;; should output LT for less than, EQ for equal and GT for greater than.
 ;;
-;; An empty dictionary is represented as '(#'cmp), i.e. a list containing
-;; just the ordering function. A con is that functions can not be used as keys.
-;;
-;; The dictionary root node is represented as '(key value left right #'cmp)
+;; A dictionary root node is represented as '(key value left right size #'cmp)
 ;; whereas all the children nodes are either nil (empty) or
-;; '(key value left right).
+;; '(key value left right size), with size >= 1.
+;;
+;; An empty dictionary has size 0, and the key, value, left and right items are
+;; undefined but present, possibly as nil.
 ;;
 
 ;;
