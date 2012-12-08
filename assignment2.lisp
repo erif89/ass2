@@ -437,13 +437,27 @@
   (let ((dict `("2" "two"
                 ("1" "one" nil nil)
                 ("3" "three" nil nil)
-                ,#'strcompare)))
+                ,#'strcompare))
+        (dict2 `("4" "four"
+                 ("2" "two"
+                   ("1" "one" nil nil)
+                   ("3" "three" nil nil))
+                 ("5" "five"
+                   nil
+                   ("6" "six" nil nil))
+                 ,#'strcompare)))
     (assert-equal nil (lookup "1" `("2" "one" nil nil ,#'strcompare)))
     (assert-equal nil (lookup "1" `("one" "1" nil nil ,#'strcompare)))
     (assert-equal "one" (lookup "1" `("1" "one" nil nil ,#'strcompare)))
     (assert-equal "one" (lookup "1" dict))
     (assert-equal "two" (lookup "2" dict))
     (assert-equal "three" (lookup "3" dict))
+    (assert-equal "one" (lookup "1" dict2))
+    (assert-equal "three" (lookup "3" dict2))
+    (assert-equal "six" (lookup "6" dict2))
+    (assert-equal "two" (lookup "2" dict2))
+    (assert-equal "five" (lookup "5" dict2))
+    (assert-equal "four" (lookup "4" dict2))
   )
 )
 
