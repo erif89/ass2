@@ -87,7 +87,7 @@
     (cond
       ((null key2)
         default)
-      ((eq (funcall cmp key key2) 'EQ)
+      ((eq (funcall cmp key key2) 'EQ)  ; TODO use case or let here
         value)
       ((eq (funcall cmp key key2) 'LT)
         (if left (lookuphelper key left default cmp) default))
