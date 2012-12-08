@@ -74,21 +74,19 @@
 ;;
 (defun lookup (key dict &key default)
   "Returns dict[key], or default/nil if no such value exists"
-  (let ((tree (treedict-tree dict))
-        (cmp (treedict-cmp dict)))
-    (if tree
-        (lookuphelper key tree default cmp)
-        default)))
+  (if (not (isempty-dictionary dict))
+      (lookuphelper key dict default (fifth dict))
+      default))
 
 ;;
 ;; Help function for lookup, recurse over the tree in search of key.
 ;;
 (defun lookuphelper (key node default cmp)
   "Returns value associated with key in node subtree, or default/nil"
-  (let ((key2 (treenode-key node))
-        (value (treenode-value node))
-        (left (treenode-left node))
-        (right (treenode-right node)))
+  (let ((key2 (first node))
+        (value (second node))
+        (left (third node))
+        (right (fourth node)))
     (cond
       ((null key2)
         default)
