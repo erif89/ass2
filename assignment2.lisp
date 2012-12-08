@@ -463,9 +463,25 @@
 )
 
 (define-test update
-  (assert-equal
-    (write-to-string (update "a" "b" (update "a" "b" (create-dictionary))))
-    (write-to-string (update "a" "b" (create-dictionary))))
+  (let ((dict `("2" "two"
+                ("1" "one" nil nil)
+                ("3" "three" nil nil)
+                ,#'strcompare))
+        (dict2 `("4" "four"
+                 ("2" "two"
+                   ("1" "one" nil nil)
+                   ("3" "three" nil nil))
+                 ("5" "five"
+                   nil
+                   ("6" "six" nil nil))
+                 ,#'strcompare)))
+    (assert-equal
+      (write-to-string (update "a" "b" (update "a" "b" (create-dictionary))))
+      (write-to-string (update "a" "b" (create-dictionary))))
+    (assert-equal
+      (write-to-string dict)
+      (write-to-string (update "3" "three" (update "1" "one"
+        (update "2" "two" (create-dictionary))))))
   ; (assert-equal
     ; (write-to-string (make-treedict
      ; :tree (make-treenode :key 1 :value "one" :size 4
@@ -493,6 +509,7 @@
      ; :cmp #'numcompare))
     ; (write-to-string (update 4 "four" (update 2 "two" (update 1 "one"
      ; (update 3 "three" (create-dictionary :compare #'numcompare)))))))
+  )
 )
 
 (define-test create_with_numkey
