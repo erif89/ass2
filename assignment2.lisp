@@ -179,18 +179,18 @@
     (cond
       ((or (not (or left right)) (< size 3)) node) ; leaf
       ((not left) ; right skewed
-        (rebalance (rotate (list key value
-          nil (rebalance right) size) t)))
+        (rebalancehelper (rotate (list key value
+          nil (rebalancehelper right) size) t)))
       ((not right) ; left skewed
-        (rebalance (rotate (list key value
-          (rebalance left) nil size) nil)))
+        (rebalancehelper (rotate (list key value
+          (rebalancehelper left) nil size) nil)))
       ((< (abs (- (log (fifth left) 2)
                   (log (fifth right) 2)))
            2) ; balanced
-        (list key value (rebalance left) (rebalance right) size))
-      (t (rebalance
+        (list key value (rebalancehelper left) (rebalancehelper right) size))
+      (t (rebalancehelper
           (rotate
-            (list key value (rebalance left) (rebalance right) size)
+            (list key value (rebalancehelper left) (rebalancehelper right) size)
             (< (fifth right) (fifth left)))))))) ; skewed
 
 ;;
