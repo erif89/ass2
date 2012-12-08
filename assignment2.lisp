@@ -56,8 +56,17 @@
 (defun create-dictionary (&key compare)
   "Returns the empty dict with compare (or strcompare) as ordering function"
   (if (null compare)
-      (make-treedict :cmp #'strcompare)
-      (make-treedict :cmp compare)))
+      (list #'strcompare)
+      (list compare)))
+
+(defun isempty-dictionary (dict)
+  (or (null dict)
+      (and (functionp (car dict))
+           (null (cdr dict)))))
+
+(defun isroot-dictionary (dict)
+  (or (functionp (first (dict)))
+      (and dict (functionp (fifth (dict))))))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
