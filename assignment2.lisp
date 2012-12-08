@@ -222,18 +222,18 @@
 ;;
 (defun keys (dict)
   "Returns list of keys in dict"
-  (keyshelper (treedict-tree dict) nil))
+  (keyshelper dict nil)) ; TODO use labels instead of having keyshelper as external function
 
 ;;
 ;; Help function for keys, recurse over the tree to build a list of all keys.
 ;;
 (defun keyshelper (node acc)
   "Returns value associated with key in node subtree, or default/nil"
-  (if (null node) acc
-      (let ((key (treenode-key node))
-            (left (treenode-left node))
-            (right (treenode-right node)))
-        (cons key  (keyshelper left (keyshelper right acc))))))
+  (if (isempty-dictionary node) acc
+      (let ((key (first node))
+            (left (third node))
+            (right (fourth node)))
+        (cons key (keyshelper left (keyshelper right acc))))))
 
 ;;
 ;; Determines if dict1 and dict2 contain the same set of keys.
