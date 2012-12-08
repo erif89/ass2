@@ -433,20 +433,20 @@
 
 (define-test lookup
   (let ((dict `("2" "two"
-                ("1" "one" nil nil)
-                ("3" "three" nil nil)
-                ,#'strcompare))
+                ("1" "one" nil nil 1)
+                ("3" "three" nil nil 1)
+                3 ,#'strcompare))
         (dict2 `("4" "four"
                  ("2" "two"
-                   ("1" "one" nil nil)
-                   ("3" "three" nil nil))
+                   ("1" "one" nil nil 1)
+                   ("3" "three" nil nil 1) 3)
                  ("5" "five"
                    nil
-                   ("6" "six" nil nil))
-                 ,#'strcompare)))
-    (assert-equal nil (lookup "1" `("2" "one" nil nil ,#'strcompare)))
-    (assert-equal nil (lookup "1" `("one" "1" nil nil ,#'strcompare)))
-    (assert-equal "one" (lookup "1" `("1" "one" nil nil ,#'strcompare)))
+                   ("6" "six" nil nil 1) 2)
+                 6 ,#'strcompare)))
+    (assert-equal nil (lookup "1" `("2" "one" nil nil 1 ,#'strcompare)))
+    (assert-equal nil (lookup "1" `("one" "1" nil nil 1 ,#'strcompare)))
+    (assert-equal "one" (lookup "1" `("1" "one" nil nil 1 ,#'strcompare)))
     (assert-equal "one" (lookup "1" dict))
     (assert-equal "two" (lookup "2" dict))
     (assert-equal "three" (lookup "3" dict))
