@@ -435,6 +435,20 @@
   )
 )
 
+(define-test lookup
+  (let ((dict `("2" "two"
+                ("1" "one" nil nil)
+                ("3" "three" nil nil)
+                ,#'strcompare)))
+    (assert-equal nil (lookup "1" `("2" "one" nil nil ,#'strcompare)))
+    (assert-equal nil (lookup "1" `("one" "1" nil nil ,#'strcompare)))
+    (assert-equal "one" (lookup "1" `("1" "one" nil nil ,#'strcompare)))
+    (assert-equal "one" (lookup "1" dict))
+    (assert-equal "two" (lookup "2" dict))
+    (assert-equal "three" (lookup "3" dict))
+  )
+)
+
 (define-test update
   (assert-equal
     (write-to-string (update "a" "b" (update "a" "b" (create-dictionary))))
