@@ -647,6 +647,16 @@
         (dict9 (update 4 "indeed" (update 41 "yup" (update 9 "nine"
           (update 13 "two" (update 3 "three" (update 2 "four"
           (update 1 "one" (create-dictionary :compare #'numcompare)))))))))
+        (dict10 (list 4 4
+          (list 2 2
+            (list 1 1 nil nil 1)
+            (list 3 3 nil nil 1)
+            3)
+          (list 5 5
+            nil
+            (list 6 6 nil nil 1)
+            2)
+          6 #'numcompare)))
         ; (dict10 (make-treedict :cmp #'numcompare :tree (make-treenode
           ; :key 4 :value 4 :size 6
           ; :left  (make-treenode :key 2 :value 2 :size 3
@@ -691,6 +701,7 @@
               ; :right (make-treenode :key 6 :value 6 :size 1)))))))
     (assert-true (samekeys dict dict))
     (assert-false (samekeys dict dict2))
+    (assert-true (samekeys dict2 dict2))
     (assert-false (samekeys dict2 dict))
     (assert-true (samekeys dict2 dict3))
     (assert-true (samekeys dict3 dict2))
@@ -699,7 +710,7 @@
     (assert-true (samekeys dict8 dict7))
     (assert-true (samekeys dict7 dict8))
     (assert-true (samekeys dict9 dict9))
-    ; (assert-true (samekeys dict10 dict10))
+    (assert-true (samekeys dict10 dict10))
     ; (assert-true (samekeys dict10 dict11))
     ; (assert-true (samekeys dict10 dict12))
     ; (assert-true (samekeys dict10 dict13))
@@ -710,15 +721,16 @@
     ; (assert-true (samekeys dict13 dict12))
     ; (assert-true (samekeys dict14 dict11))
     ; (assert-true (samekeys dict13 dict14))
-    ; (assert-false (samekeys dict7 dict9))
-    ; (assert-false (samekeys dict8 dict9))
-    ; (assert-false (samekeys dict9 dict7))
-    ; (assert-false (samekeys dict4 dict5))
-    ; (assert-false (samekeys dict5 dict4))
+    (assert-false (samekeys dict7 dict9))
+    (assert-false (samekeys dict8 dict9))
+    (assert-false (samekeys dict9 dict7))
+    (assert-false (samekeys dict4 dict5))
+    (assert-false (samekeys dict5 dict4))
   )
 )
 
 (define-test with-keys
+  (assert-true nil)
   ; (let ((dict (make-treedict :cmp #'numcompare :tree (make-treenode
           ; :key 4 :value 4 :size 6
           ; :left  (make-treenode :key 2 :value 2 :size 3
@@ -733,7 +745,7 @@
       ; (let ((d (update 2 4 (update 1 2
             ; (create-dictionary :compare #'my_comp)))))
         ; (with-keys (k v d) (format t "~D~%" (+ k v)))))
-  )
+  ; )
 )
 
 (define-test match-pattern
