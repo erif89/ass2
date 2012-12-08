@@ -160,7 +160,8 @@
 ;;
 (defun rebalance (dict)
   "Returns dict with depth of each child differing with at most 1."
-  `(,@(rebalancehelper dict) ,(sixth dict)))
+  (let ((oldroot (list (first dict) (second dict) (third dict) (fourth dict) (fifth dict))))
+    `(,@(rebalancehelper oldroot) ,(sixth dict))))
 
 ;;
 ;; Help function to rebalance. Returns node reordered to be "height-balanced".
