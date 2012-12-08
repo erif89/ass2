@@ -482,6 +482,11 @@
       (write-to-string dict)
       (write-to-string (update "3" "three" (update "1" "one"
         (update "2" "two" (create-dictionary))))))
+    (assert-equal
+      (write-to-string dict)
+      (write-to-string (update "3" "three" (update "1" "one" (update "2" "two"
+        (update "6" "six" (update "5" "five"
+        (update "4" "four" (create-dictionary)))))))))
   ; (assert-equal
     ; (write-to-string (make-treedict
      ; :tree (make-treenode :key 1 :value "one" :size 4
