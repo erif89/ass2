@@ -344,20 +344,10 @@
 ;; and nil as variables.
 ;;
 (defmacro match-pattern (expr &rest patternlist)
-; Or is it a list such that a call looks like this: (match pattern '(1 2 a b) ('(1 2 b a) "no match") ('(1 2 a b) "match") )
-; which would print "match"
-  "Returns result of evaluating the first body with pattern matching expr"
-  (cons 'cond
-        (loop for p in patternlist collect
-          (progn
-            `((match ,expr ,(car p))
-                ,(nconc (cadr p) (list (car p))))))))
-
-
-(defun match (expr pattern)
-  (cond
-    ((equal expr pattern) t)
-    (t nil)))
+  "Returns result of evaluationg the first body with pattern matching expr"
+  (cons 'cond (loop for p in patternlist collect
+    (progn `((equal ,expr ,(list 'QUOTE (car p)))
+             ,(cadr p))))))
 
 ;;
 ;; Test functions
