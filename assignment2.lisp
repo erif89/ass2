@@ -56,17 +56,14 @@
 (defun create-dictionary (&key compare)
   "Returns the empty dict with compare (or strcompare) as ordering function"
   (if (null compare)
-      (list #'strcompare)
-      (list compare)))
+      (list nil nil nil nil 0 #'strcompare)
+      (list nil nil nil nil 0 compare)))
 
 (defun isempty-dictionary (dict)
-  (or (null dict)
-      (and (functionp (car dict))
-           (null (cdr dict)))))
+  (or (null dict) (= 0 (fifth dict))))
 
 (defun isroot-dictionary (dict)
-  (or (functionp (first (dict)))
-      (and dict (functionp (fifth (dict))))))
+  (functionp (sixth (dict))))
 
 ;;
 ;; Finds value that key is mapped to in dict, returns default if it does not
@@ -74,9 +71,9 @@
 ;;
 (defun lookup (key dict &key default)
   "Returns dict[key], or default/nil if no such value exists"
-  (if (not (isempty-dictionary dict))
-      (lookuphelper key dict default (fifth dict))
-      default))
+  (if (isempty-dictionary dict)
+      default
+      (lookuphelper key dict default (sixth dict))))
 
 ;;
 ;; Help function for lookup, recurse over the tree in search of key.
