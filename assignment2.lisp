@@ -461,17 +461,17 @@
 
 (define-test update
   (let ((dict `("2" "two"
-                ("1" "one" nil nil)
-                ("3" "three" nil nil)
-                ,#'strcompare))
+                ("1" "one" nil nil 1)
+                ("3" "three" nil nil 1)
+                3 ,#'strcompare))
         (dict2 `("4" "four"
                  ("2" "two"
-                   ("1" "one" nil nil)
-                   ("3" "three" nil nil))
+                   ("1" "one" nil nil 1)
+                   ("3" "three" nil nil 1) 3)
                  ("5" "five"
                    nil
-                   ("6" "six" nil nil))
-                 ,#'strcompare)))
+                   ("6" "six" nil nil 1) 2)
+                 6 ,#'strcompare)))
     (assert-equal
       (write-to-string (update "a" "b" (update "a" "b" (create-dictionary))))
       (write-to-string (update "a" "b" (create-dictionary))))
@@ -480,7 +480,7 @@
       (write-to-string (update "3" "three" (update "1" "one"
         (update "2" "two" (create-dictionary))))))
     (assert-equal
-      (write-to-string dict)
+      (write-to-string dict2)
       (write-to-string (update "3" "three" (update "1" "one" (update "2" "two"
         (update "6" "six" (update "5" "five"
         (update "4" "four" (create-dictionary)))))))))
