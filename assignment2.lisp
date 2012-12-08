@@ -244,12 +244,12 @@
 ;;
 (defun samekeys (dict1 dict2)
   "Returns T if dict1 has the same keys as dict2, nil otherwise"
-  (let ((root1 (treedict-tree dict1))
-        (root2 (treedict-tree dict2)))
-    (if (or (null root1) (null root2))
-        (and (null root1) (null root2))
-        (and (= (treenode-size root1) (treenode-size root2))
-             (samekeyshelper (treedict-cmp dict1)
+  (let ((root1 (list (first dict1) (second dict1) (third dict1) (fourth dict1) (fifth dict1)))
+        (root2 (list (first dict2) (second dict2) (third dict2) (fourth dict2) (fifth dict2))))
+    (if (or (isempty-dictionary dict1) (isempty-dictionary dict2))
+        (and (isempty-dictionary dict1) (isempty-dictionary dict2))
+        (and (= (fifth dict1) (fifth dict2))
+             (samekeyshelper (sixth dict1)
                (buildstack root1 nil)
                (buildstack root2 nil))))))
 
@@ -258,7 +258,7 @@
 ;;
 (defun buildstack (node stack)
   "Returns stack appended with the leftmost children of node"
-  (if node (buildstack (treenode-left node) (cons node stack)) stack))
+  (if node (buildstack (third node) (cons node stack)) stack))
 
 ;;
 ;; Used by samekeyshelper, stack with its top element popped and possibly
@@ -267,8 +267,8 @@
 (defun popnode (stack)
   "Returns stack with its top element popped and possibly new nodes added"
   (when stack
-    (if (treenode-right (car stack))
-        (buildstack (treenode-right (car stack)) (cdr stack))
+    (if (fourth (first stack))
+        (buildstack (fourth (first stack)) (cdr stack))
         (cdr stack))))
 
 ;;
@@ -276,12 +276,12 @@
 ;;
 (defun samekeyshelper (cmp stack1 stack2)
   "Returns t if nodes and right subtrees in stacks have same keys, else nil"
-  (let ((empty1 (null (car stack1)))
-        (empty2 (null (car stack2))))
+  (let ((empty1 (isempty-dictionary (car stack1)))
+        (empty2 (isempty-dictionary (car stack2))))
   (unless (or (and empty1 (car stack2)) (and (car stack1) empty2))
     (or (and empty1 empty2)
-        (and (eq (funcall cmp (treenode-key(car stack1))
-                              (treenode-key(car stack2))) 'EQ)
+        (and (eq (funcall cmp (first (car stack1))
+                              (first (car stack2))) 'EQ)
              (samekeyshelper cmp (popnode stack1) (popnode stack2)))))))
 
 (defun allpairs (dict)
