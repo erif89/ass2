@@ -201,13 +201,13 @@
 (defun rotate (node rotate-left)
   (let ((left (if rotate-left
                   (third node)
-                  (third node)))
+                  (fourth node)))
         (right (if rotate-left
-                  (third node)
+                  (fourth node)
                   (third node))))
     (let ((lsize (if left (fifth left) 0))
           (rleft (third right))
-          (rright (third right)))
+          (rright (fourth right)))
       (let ((newvalue (list (first node) (second node) left rleft
                         (+ (+ lsize 1) (if rleft (fifth rleft) 0)))))
         (list (first right) (second right) ; key, value
