@@ -284,23 +284,15 @@
                               (first (car stack2))) 'EQ)
              (samekeyshelper cmp (popnode stack1) (popnode stack2)))))))
 
-(defun allpairs (dict)
-  "Returns list of key value pairs in dict"
-  (allpairshelper (treedict-tree dict) nil))
-
-;;
-;; Help function for allpairs, recurse over the tree to build a list of all key
-;; value pairs.
-;;
-(defun allpairshelper (node acc)
-  "Returns value associated with key in node subtree, or default/nil"
-  (if (null node) acc
-      (let ((key (treenode-key node))
-            (val (treenode-value node))
-            (left (treenode-left node))
-            (right (treenode-right node)))
+(defun allpairs (dict acc)
+  "Returns list of key value pairs in dict appended to acc"
+  (if (null dict) acc
+      (let ((key (first dict))
+            (val (second dict))
+            (left (third dict))
+            (right (fourth dict)))
         (cons (cons key (cons val nil))
-              (allpairshelper left (allpairshelper right acc))))))
+              (allpairs left (allpairs right acc))))))
 
 ;;
 ;; Evaluates body once for each key-value pair in dict. key and value are
@@ -308,7 +300,7 @@
 ;;
 (defmacro with-keys (args &rest body)
   "Returns result of evaluating body on each key-value pair in dict"
-  (do ((pairs (allpairs (car(cddr args)))))
+  (do ((pairs (allpairs (car(cddr args)) nil)))
     `(loop for p in pairs do
       (let ((key (gensym))
             (value (gensym)))
