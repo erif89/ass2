@@ -139,26 +139,20 @@
 ;; accumulated value so far. initial is the initial value for sofar. The order
 ;; of application is (or at least should be) irrelevant.
 ;;
+;; Applies fun to key-values in preorder walk of dict.
+;;
 (defun fold (fun dict initial)
   "Returns fun(k1, v2, fun(k2, v2, ...initial...)) for key-values in dict"
-  (let ((tree (treedict-tree dict)))
-    (if tree
-        (foldhelper fun tree initial)
-        initial)))
-
-;;
-;; Help function to fold. Applies fun to key-values in preorder walk of node.
-;;
-(defun foldhelper (fun node sofar)
-  "Returns fun(k1, v2, fun(k2, v2, ...sofar...)) for key-values in node"
-  (let ((left (treenode-left node))
-        (right (treenode-right node))
-        (res (funcall fun (treenode-key node) (treenode-value node) sofar)))
-    (cond
-      ((and left right) (foldhelper fun right (foldhelper fun left res)))
-      (left (foldhelper fun left res))
-      (right (foldhelper fun right res))
-      (t res))))
+  (if (> (fifth dict) 0)
+      (let ((left (third dict))
+            (right (fourth dict))
+            (res (funcall fun (first dict) (second dict) initial)))
+        (cond
+          ((and left right) (fold fun right (fold fun left res)))
+          (left (fold fun left res))
+          (right (fold fun right res))
+          (t res)))
+      initial))
 
 ;;
 ;; Returns a new dictionary that is more balanced (if needed).
