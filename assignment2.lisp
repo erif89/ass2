@@ -203,27 +203,22 @@
 ;;
 (defun rotate (node rotate-left)
   (let ((left (if rotate-left
-                  (treenode-left node)
-                  (treenode-right node)))
+                  (third node)
+                  (third node)))
         (right (if rotate-left
-                  (treenode-right node)
-                  (treenode-left node))))
-    (let ((lsize (if left (treenode-size left) 0))
-          (rleft (treenode-left right))
-          (rright (treenode-right right)))
-      (let ((newvalue (make-treenode
-              :key (treenode-key node)
-              :value (treenode-value node)
-              :size (+ (+ lsize 1) (if rleft (treenode-size rleft) 0))
-              :left left :right rleft)))
-        (make-treenode
-          :key (treenode-key right)
-          :value (treenode-value right)
-          :size (+
-            (+ lsize (if rleft (treenode-size rleft) 0))
-            (+ (if rright (treenode-size rright) 0) 2))
-          :left (if rotate-left newvalue rright)
-          :right (if rotate-left rright newvalue))))))
+                  (third node)
+                  (third node))))
+    (let ((lsize (if left (fifth left) 0))
+          (rleft (third right))
+          (rright (third right)))
+      (let ((newvalue (list (first node) (second node) left rleft
+                        (+ (+ lsize 1) (if rleft (fifth rleft) 0)))))
+        (list (first right) (second right) ; key, value
+          (if rotate-left newvalue rright) ; left
+          (if rotate-left rright newvalue) ; right
+          (+                               ; size
+            (+ lsize (if rleft (fifth rleft) 0))
+            (+ (if rright (fifth rright) 0) 2)))))))
 
 ;;
 ;; Returns the keys of the dictionary in a list.
