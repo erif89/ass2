@@ -100,44 +100,38 @@
 ;;
 (defun update (key value dict)
   "Returns dict with (key, value) destructively inserted"
-  (let ((tree (treedict-tree dict))
-        (cmp (treedict-cmp dict)))
-    (make-treedict
-     :tree (if tree
-               (updatehelper key value tree cmp)
-               (make-treenode :key key :value value :size 1))
-     :cmp cmp)))
+    `(,@(if (isempty-dictionary dict)
+            (list key value (third dict) (fourth dict) 1)
+            (updatehelper key value dict (sixth dict)))
+      ,(sixth dict)))
 
 ;;
 ;; Help function for update. cmp is used for key comparisons in the key.
 ;;
 (defun updatehelper (key value node cmp)
   "Returns node with (key, value) destructively inserted"
-  (let ((key2 (treenode-key node))
-        (value2 (treenode-value node))
-        (size (treenode-size node))
-        (left (treenode-left node))
-        (right (treenode-right node)))
-    (cond
+  (let ((key2 (first node))
+        (value2 (second node))
+        (left (third node))
+        (right (fourth node))
+        (size (fifth node)))
+    (cond  ; TODO use case or let here
       ((eq (funcall cmp key key2) 'EQ)       ; Keys match
-        (make-treenode :key key :value value
-         :left left :right right :size size))
+        `(,key ,value ,left ,right ,size))
       ((eq (funcall cmp key key2) 'LT)      ; Update left subtree
-        (if left  ; End of recursion if subtree is empty
-          (make-treenode :key key2 :value value2 :size (+ size 1)
-           :left (updatehelper key value left cmp)
-           :right right)
-          (make-treenode :key key2 :value value2 :size (+ size 1)
-           :left (make-treenode :key key :value value :size 1)
-           :right right)))
+        (list key2 value2
+          (if (isempty-dictionary left) ; End of recursion if subtree is empty
+              (list key value nil nil 1)
+              (updatehelper key value left cmp))
+          right
+          (+ size 1)))
       ((eq (funcall cmp key key2) 'GT)      ; Update right subtree
-        (if right
-          (make-treenode :key key2 :value value2 :size (+ size 1)
-           :left left
-           :right (updatehelper key value right cmp))
-          (make-treenode :key key2 :value value2 :size (+ size 1)
-           :left left
-           :right (make-treenode :key key :value value :size 1)))))))
+        (list key2 value2
+          left
+          (if (isempty-dictionary right)
+              (list key value nil nil 1)
+              (updatehelper key value right cmp))
+          (+ size 1))))))
 
 ;;
 ;; fold the key-value pairs of the dictionary using the function fun, which
