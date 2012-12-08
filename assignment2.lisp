@@ -33,7 +33,7 @@
 ;; Comparison function for strings, used as default by create-dictionary
 ;;
 (defun strcompare (a b)
-  "Returns LT for less than, T for equal and GT for greater than"
+  "Returns LT for less than, EQ for equal and GT for greater than"
   (cond
     ((string< a b) 'LT)
     ((string= a b) 'EQ)
@@ -43,7 +43,7 @@
 ;; Comparison function for numbers
 ;;
 (defun numcompare (a b)
-  "Returns LT for less than, T for equal and GT for greater than"
+  "Returns LT for less than, EQ for equal and GT for greater than"
   (cond
     ((< a b) 'LT)
     ((= a b) 'EQ)
