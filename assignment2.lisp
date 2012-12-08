@@ -240,7 +240,7 @@
 ;;
 ;; Returns the keys of the dictionary in a list.
 ;; The order of the keys is not relevant.
-;; 
+;;
 (defun keys (dict)
   "Returns list of keys in dict"
   (keyshelper (treedict-tree dict) nil))
@@ -280,7 +280,7 @@
 (defun buildstack (node stack)
   "Returns stack appended with the leftmost children of node"
   (if node (buildstack (treenode-left node) (cons node stack)) stack))
-  
+
 ;;
 ;; Used by samekeyshelper, stack with its top element popped and possibly
 ;; the leftmost children of the top's right subtree added.
@@ -387,7 +387,7 @@
   (assert-error 'error (numcompare 0 "")) ; "" is not a number
   (assert-error 'error (numcompare nil nil)) ; nil is not a number
   )
-  
+
 (define-test strcompare
   (assert-equal 'GT (strcompare "ABC" "AAA"))
   (assert-equal 'GT (strcompare "ZYX" "ONM"))
@@ -768,8 +768,8 @@
 )
 
 (define-test match-pattern
-  (assert-equal 3 (match-pattern 2 
-                      (1 (+ 10)) 
+  (assert-equal 3 (match-pattern 2
+                      (1 (+ 10))
                       (2 (+ 1))))
   (assert-equal '(1 2 3) (match-pattern '(2 3)
                       ('(2 3) (cons 1))
