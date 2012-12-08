@@ -15,20 +15,19 @@
 
 
 ;;
-;; Dictionary structure with purely functional lookup and update functions
+;; Dictionary with purely functional lookup and update functions.
 ;;
-;; A dictionary of type treedict is a binary search tree with an ordering
-;; function (cmp) and a root treenode (tree), defined below. The cmp function
-;; is used for node key comparison and should output LT for less than,
-;; T for equal and GT for greater than.
+;; A dictionary is a binary search tree with an ordering function (cmp)
+;; in the root node. The cmp function is used for node key comparison and
+;; should output LT for less than, EQ for equal and GT for greater than.
 ;;
-(defstruct treedict tree cmp)
-
+;; An empty dictionary is represented as '(#'cmp), i.e. a list containing
+;; just the ordering function. A con is that functions can not be used as keys.
 ;;
-;; A treenode is a key-value store with two children treenodes. Leaf children
-;; are represented as nil.
+;; The dictionary root node is represented as '(key value left right #'cmp)
+;; whereas all the children nodes are either nil (empty) or
+;; '(key value left right).
 ;;
-(defstruct treenode key value size left right)
 
 ;;
 ;; Comparison function for strings, used as default by create-dictionary
